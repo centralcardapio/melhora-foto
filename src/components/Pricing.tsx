@@ -5,7 +5,7 @@ import { Check, Camera, Clock } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
+    name: "Mini",
     photos: 10,
     price: 49,
     description: "Ideal para testar nossa tecnologia",
