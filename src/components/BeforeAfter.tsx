@@ -2,10 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles } from "lucide-react";
 import beforeAfterDemo from "@/assets/before-after-demo.jpg";
-
 export const BeforeAfter = () => {
-  return (
-    <section className="py-20 bg-gradient-to-br from-background to-muted/20">
+  return <section className="bg-gradient-to-br from-background to-muted/20 py-[13px]">
       <div className="container">
         <div className="text-center space-y-4 mb-16">
           <Badge variant="secondary" className="w-fit mx-auto">
@@ -27,11 +25,7 @@ export const BeforeAfter = () => {
           <Card className="overflow-hidden shadow-2xl">
             <CardContent className="p-0">
               <div className="relative">
-                <img 
-                  src={beforeAfterDemo} 
-                  alt="Comparação antes e depois do processamento de foto de comida"
-                  className="w-full h-[400px] md:h-[500px] object-cover"
-                />
+                <img src={beforeAfterDemo} alt="Comparação antes e depois do processamento de foto de comida" className="w-full h-[400px] md:h-[500px] object-cover" />
                 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
                 
@@ -60,33 +54,8 @@ export const BeforeAfter = () => {
             </CardContent>
           </Card>
 
-          <div className="grid gap-6 md:grid-cols-3 mt-12">
-            <div className="text-center space-y-2">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <span className="text-primary font-bold">1</span>
-              </div>
-              <h3 className="font-semibold">Upload da Foto</h3>
-              <p className="text-sm text-muted-foreground">Envie sua foto tirada com celular</p>
-            </div>
-            
-            <div className="text-center space-y-2">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <span className="text-primary font-bold">2</span>
-              </div>
-              <h3 className="font-semibold">IA Processa</h3>
-              <p className="text-sm text-muted-foreground">Nossa IA aplica técnicas profissionais</p>
-            </div>
-            
-            <div className="text-center space-y-2">
-              <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center mx-auto">
-                <span className="text-success font-bold">3</span>
-              </div>
-              <h3 className="font-semibold">Download</h3>
-              <p className="text-sm text-muted-foreground">Baixe sua foto profissional</p>
-            </div>
-          </div>
+          
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
