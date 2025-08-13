@@ -38,13 +38,13 @@ const benefits = [
     icon: DollarSign,
     title: "Custo Benefício",
     description: "Muito mais barato que contratar um fotógrafo profissional para todo o cardápio",
-    highlight: "10x mais barato"
+    highlight: "15x mais barato"
   },
   {
     icon: Clock,
     title: "Resultado Rápido",
     description: "Processamento em minutos - não precisa esperar dias para ter suas fotos prontas",
-    highlight: "Em 2 minutos"
+    highlight: "Em 90 segundos"
   }
 ];
 

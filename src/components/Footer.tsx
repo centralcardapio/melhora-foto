@@ -25,8 +25,7 @@ export const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Suporte</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/fale-conosco" className="hover:text-foreground transition-colors">Fale Conosco</a></li>
-              <li><a href="/ajuda" className="hover:text-foreground transition-colors">Central de Ajuda</a></li>
+              <li><a href="mailto:contato@centraldocardapio.com.br" className="hover:text-foreground transition-colors">Fale Conosco</a></li>
             </ul>
           </div>
 

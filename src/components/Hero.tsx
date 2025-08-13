@@ -38,15 +38,15 @@ export const Hero = () => {
 
             <div className="flex items-center gap-8 pt-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">+47%</div>
+                <div className="text-2xl font-bold text-primary">+57%</div>
                 <div className="text-sm text-muted-foreground">Aumento médio em vendas</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">10x</div>
-                <div className="text-sm text-muted-foreground">Mais barato que fotógrafo</div>
+                <div className="text-2xl font-bold text-primary">15x</div>
+                <div className="text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">2min</div>
+                <div className="text-2xl font-bold text-primary">90s</div>
                 <div className="text-sm text-muted-foreground">Processamento médio</div>
               </div>
             </div>
@@ -69,7 +69,7 @@ export const Hero = () => {
                 </div>
                 <div>
                   <div className="font-semibold">Vendas aumentaram</div>
-                  <div className="text-sm text-muted-foreground">em 47% no primeiro mês</div>
+                  <div className="text-sm text-muted-foreground">em 57% no primeiro mês</div>
                 </div>
               </div>
             </div>

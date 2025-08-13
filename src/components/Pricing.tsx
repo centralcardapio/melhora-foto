@@ -5,13 +5,12 @@ import { Check, Camera, Clock } from "lucide-react";
 
 const plans = [
   {
-    name: "Mini",
+    name: "Degustação",
     photos: 10,
     price: 49,
     description: "Ideal para testar nossa tecnologia",
     features: [
-      "10 fotos melhoradas",
-      "Processamento em até 2 minutos",
+      "<strong>10 fotos profissionais</strong>",
       "Download individual",
       "Download em lote",
       "Suporte via email"
@@ -19,33 +18,32 @@ const plans = [
     popular: false
   },
   {
-    name: "Professional",
-    photos: 20,
-    price: 79,
+    name: "Chef",
+    photos: 30,
+    price: 99,
     description: "Perfeito para cardápios médios",
     features: [
-      "20 fotos melhoradas",
+      "<strong>30 fotos profissionais</strong>",
+      "<strong>Importação de fotos de plataformas de delivery</strong>",
       "Processamento prioritário",
       "Download individual",
       "Download em lote",
-      "Suporte via email",
-      "Reprocessamento gratuito"
+      "Suporte via email"
     ],
     popular: true
   },
   {
-    name: "Complete",
-    photos: 30,
-    price: 99,
+    name: "Guia Michelin",
+    photos: 50,
+    price: 149,
     description: "Para cardápios completos",
     features: [
-      "30 fotos melhoradas",
+      "<strong>50 fotos profissionais</strong>",
+      "<strong>Importação de fotos de plataformas de delivery</strong>",
       "Processamento prioritário",
       "Download individual",
       "Download em lote",
-      "Suporte prioritário",
-      "Reprocessamento gratuito",
-      "Consultoria de cardápio"
+      "Suporte prioritário"
     ],
     popular: false
   }
@@ -72,7 +70,7 @@ export const Pricing = () => {
 
         <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg`}>
+            <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-primary text-primary-foreground px-4 py-1">
@@ -96,16 +94,16 @@ export const Pricing = () => {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 flex-1">
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-center gap-3">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm" dangerouslySetInnerHTML={{ __html: feature }}></span>
                   </div>
                 ))}
               </CardContent>
 
-              <CardFooter>
+              <CardFooter className="mt-auto">
                 <Button 
                   variant={plan.popular ? "hero" : "default"} 
                   className="w-full"
@@ -118,9 +116,12 @@ export const Pricing = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 space-y-2">
           <p className="text-sm text-muted-foreground">
             Todos os planos incluem processamento com IA avançada e garantia de satisfação
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Créditos válidos por 30 dias após a compra
           </p>
         </div>
       </div>
