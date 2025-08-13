@@ -17,7 +17,7 @@ export const BeforeAfter = () => {
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Nossa IA aplica técnicas avançadas de iluminação, composição e realce de cores para tornar seus pratos irresistíveis
+            Nossa solução aplica técnicas avançadas de fotografia profissional incluindo iluminação, composição e realce de cores para tornar seus pratos irresistíveis
           </p>
         </div>
 
