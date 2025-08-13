@@ -1,14 +1,12 @@
 import { ChefHat } from "lucide-react";
-
 export const Footer = () => {
-  return (
-    <footer className="border-t bg-muted/30">
+  return <footer className="border-t bg-muted/30">
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <ChefHat className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">FotoCardápio IA</span>
+              <span className="text-lg font-bold">Central do Cardápio</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               Transformando fotos de cardápio com inteligência artificial para aumentar suas vendas no delivery.
@@ -50,6 +48,5 @@ export const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
