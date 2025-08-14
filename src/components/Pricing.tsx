@@ -4,25 +4,25 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Camera, Clock } from "lucide-react";
 
 const plans = [{
-  name: "Mini",
+  name: "Degustação",
   photos: 10,
   price: 49,
   description: "Ideal para testar nossa tecnologia",
-  features: ["10 fotos melhoradas", "Processamento em até 2 minutos", "Download individual", "Download em lote", "Suporte via email"],
+  features: ["<strong>10 fotos profissionais</strong>", "Download individual", "Download em lote", "Suporte via email"],
   popular: false
 }, {
-  name: "Professional",
-  photos: 20,
-  price: 79,
-  description: "Perfeito para cardápios médios",
-  features: ["20 fotos melhoradas", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via email", "Reprocessamento gratuito"],
-  popular: true
-}, {
-  name: "Complete",
+  name: "Chef",
   photos: 30,
   price: 99,
+  description: "Perfeito para cardápios médios",
+  features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via email"],
+  popular: true
+}, {
+  name: "Guia Michelin",
+  photos: 50,
+  price: 149,
   description: "Para cardápios completos",
-  features: ["30 fotos melhoradas", "Processamento prioritário", "Download individual", "Download em lote", "Suporte prioritário", "Reprocessamento gratuito", "Consultoria de cardápio"],
+  features: ["<strong>50 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte prioritário"],
   popular: false
 }];
 
@@ -71,7 +71,7 @@ export const Pricing = () => {
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className="flex items-center gap-3">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm" dangerouslySetInnerHTML={{ __html: feature }}></span>
                   </div>
                 ))}
               </CardContent>
