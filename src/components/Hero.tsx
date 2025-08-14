@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Camera, Sparkles, TrendingUp } from "lucide-react";
 import heroFood from "@/assets/hero-food.jpg";
 export const Hero = () => {
-  return <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 lg:py-32 py-[42px]">
+  return <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 py-[42px] lg:py-[111px]">
       <div className="container relative">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           <div className="space-y-8">
