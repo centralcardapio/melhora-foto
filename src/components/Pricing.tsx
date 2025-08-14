@@ -17,7 +17,7 @@ const plans = [{
   features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: true
 }, {
-  name: "Duplo Chef",
+  name: "Reserva",
   photos: 50,
   price: 149,
   description: "Para cardápios completos",
