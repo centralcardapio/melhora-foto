@@ -2,10 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Camera, Sparkles, TrendingUp } from "lucide-react";
 import heroFood from "@/assets/hero-food.jpg";
-
 export const Hero = () => {
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 py-20 lg:py-32">
+  return <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 lg:py-32 py-[42px]">
       <div className="container relative">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           <div className="space-y-8">
@@ -54,11 +52,7 @@ export const Hero = () => {
 
           <div className="relative">
             <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-              <img 
-                src={heroFood} 
-                alt="Fotos profissionais de comida"
-                className="w-full h-[500px] object-cover"
-              />
+              <img src={heroFood} alt="Fotos profissionais de comida" className="w-full h-[500px] object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
             
@@ -76,6 +70,5 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
