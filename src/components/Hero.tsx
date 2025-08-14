@@ -14,8 +14,8 @@ export const Hero = () => {
               </Badge>
               
               <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
-                Transforme suas fotos de cardápio em
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> fotos profissionais</span>
+                Transforme o seu
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> cardápio com fotos profissionais</span>
               </h1>
               
               <p className="text-xl text-muted-foreground max-w-lg">
