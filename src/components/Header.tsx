@@ -11,11 +11,11 @@ export const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#como-funciona" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#antes-depois" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Como Funciona
           </a>
           <a href="#precos" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Preços
+            Planos
           </a>
           <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             FAQ

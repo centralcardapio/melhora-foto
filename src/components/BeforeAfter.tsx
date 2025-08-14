@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles } from "lucide-react";
 import beforeAfterDemo from "@/assets/before-after-demo.jpg";
 export const BeforeAfter = () => {
-  return <section className="bg-gradient-to-br from-background to-muted/20 py-[13px]">
+  return <section id="antes-depois" className="bg-gradient-to-br from-background to-muted/20 py-[13px]">
       <div className="container">
         <div className="text-center space-y-4 mb-16">
           <Badge variant="secondary" className="w-fit mx-auto">

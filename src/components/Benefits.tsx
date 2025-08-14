@@ -8,7 +8,7 @@ const benefits = [{
   highlight: "Mais apetitoso"
 }, {
   icon: TrendingUp,
-  title: "Melhora Posicionamento",
+  title: "Melhora Rankeamento",
   description: "Apps de delivery valorizam fotos de qualidade, melhorando seu ranking e visibilidade",
   highlight: "Maior visibilidade"
 }, {
@@ -29,8 +29,8 @@ const benefits = [{
 }, {
   icon: Clock,
   title: "Resultado Rápido",
-  description: "Processamento em minutos - não precisa esperar dias para ter suas fotos prontas",
-  highlight: "Em 2 minutos"
+  description: "Processamento em poucos minutos, não precisa esperar dias para ter suas fotos prontas",
+  highlight: "Em poucos minutos"
 }];
 export const Benefits = () => {
   return <section id="como-funciona" className="bg-muted/30 py-[57px]">

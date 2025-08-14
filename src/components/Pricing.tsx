@@ -7,21 +7,21 @@ const plans = [{
   photos: 10,
   price: 49,
   description: "Ideal para testar nossa tecnologia",
-  features: ["<strong>10 fotos profissionais</strong>", "Download individual", "Download em lote", "Suporte via email"],
+  features: ["<strong>10 fotos profissionais</strong>", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: false
 }, {
   name: "Chef",
   photos: 30,
   price: 99,
   description: "Perfeito para cardápios médios",
-  features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via email"],
+  features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: true
 }, {
-  name: "Guia Michelin",
+  name: "Duplo Chef",
   photos: 50,
   price: 149,
   description: "Para cardápios completos",
-  features: ["<strong>50 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte prioritário"],
+  features: ["<strong>50 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: false
 }];
 export const Pricing = () => {
@@ -53,9 +53,8 @@ export const Pricing = () => {
                 
                 <div className="mt-4">
                   <div className="flex items-center justify-center gap-2">
-                    
+                    <span className="text-3xl font-bold">R$ {plan.price}</span>
                   </div>
-                  
                 </div>
               </CardHeader>
 
@@ -70,6 +69,7 @@ export const Pricing = () => {
 
               <CardFooter className="mt-auto">
                 <Button variant={plan.popular ? "hero" : "default"} className="w-full" size="lg">
+                  <Camera className="h-4 w-4 mr-2" />
                   Transformar Fotos Agora
                 </Button>
               </CardFooter>
