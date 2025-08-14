@@ -37,8 +37,8 @@ export const Benefits = () => {
       <div className="container">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            Por que escolher nossa
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> solução?</span>
+            Por que contratar nossas
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> fotos profissionais?</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Transformamos fotos amadoras em imagens profissionais que transmitem confiança e despertam o apetite dos seus clientes
