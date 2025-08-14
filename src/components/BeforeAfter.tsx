@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles } from "lucide-react";
-import beforeAfterDemo from "@/assets/before-after-demo.jpg";
 export const BeforeAfter = () => {
   return <section id="antes-depois" className="bg-gradient-to-br from-background to-muted/20 py-[13px]">
       <div className="container">
@@ -21,40 +20,65 @@ export const BeforeAfter = () => {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden shadow-2xl">
-            <CardContent className="p-0">
-              <div className="relative">
-                <img src={beforeAfterDemo} alt="Comparação antes e depois do processamento de foto de comida" className="w-full h-[400px] md:h-[500px] object-cover" />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-                
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    <div className="bg-background/90 backdrop-blur rounded-lg p-4 text-center">
-                      <div className="text-sm font-medium text-muted-foreground mb-1">ANTES</div>
-                      <div className="text-lg font-bold">Foto Amadora</div>
-                      <div className="text-xs text-muted-foreground">Iluminação ruim, cores opacas</div>
-                    </div>
-                    
-                    <div className="flex justify-center">
-                      <div className="bg-primary rounded-full p-3">
-                        <ArrowRight className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                    </div>
-                    
-                    <div className="bg-background/90 backdrop-blur rounded-lg p-4 text-center">
-                      <div className="text-sm font-medium text-muted-foreground mb-1">DEPOIS</div>
-                      <div className="text-lg font-bold">Foto Profissional</div>
-                      <div className="text-xs text-muted-foreground">Cores vibrantes, super apetitosa</div>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* ANTES */}
+            <div className="space-y-4">
+              <Card className="overflow-hidden shadow-xl">
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <img 
+                      src="/lovable-uploads/b1837eb4-00a7-4669-8b54-7dad2438e2d2.png" 
+                      alt="Foto amadora de hambúrguer com iluminação ruim" 
+                      className="w-full h-[300px] md:h-[400px] object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="destructive" className="text-sm font-bold">
+                        ANTES
+                      </Badge>
                     </div>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-bold">Foto Amadora</h3>
+                <p className="text-muted-foreground">Iluminação ruim, cores opacas, sem apelo visual</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          
+            {/* Seta central */}
+            <div className="flex justify-center lg:justify-start">
+              <div className="bg-primary rounded-full p-4 shadow-lg">
+                <ArrowRight className="h-8 w-8 text-primary-foreground" />
+              </div>
+            </div>
+
+            {/* DEPOIS */}
+            <div className="space-y-4 lg:col-start-2 lg:row-start-1">
+              <Card className="overflow-hidden shadow-xl">
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <img 
+                      src="/lovable-uploads/81cd1348-ffa0-4bc9-ad8a-0585bcdaa80f.png" 
+                      alt="Foto profissional de hambúrguer com iluminação perfeita" 
+                      className="w-full h-[300px] md:h-[400px] object-cover" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                    <div className="absolute top-4 left-4">
+                      <Badge className="text-sm font-bold bg-green-600 hover:bg-green-700">
+                        DEPOIS
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-bold">Foto Profissional</h3>
+                <p className="text-muted-foreground">Cores vibrantes, iluminação perfeita, super apetitosa</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>;
