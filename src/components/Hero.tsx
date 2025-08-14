@@ -24,14 +24,12 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+              <Button variant="hero" size="lg" className="text-lg py-6 px-[109px] mx-[76px]">
                 <Camera className="h-5 w-5 mr-2" />
                 Transformar Fotos Agora
               </Button>
               
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                Ver Como Funciona
-              </Button>
+              
             </div>
 
             <div className="flex items-center gap-8 pt-4">
@@ -40,7 +38,7 @@ export const Hero = () => {
                 <div className="text-sm text-muted-foreground">Aumento médio em vendas</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">15x</div>
+                <div className="text-2xl font-bold text-primary mx-[24px]">15x</div>
                 <div className="text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
               </div>
               <div className="text-center">

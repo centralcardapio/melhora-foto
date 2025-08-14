@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Camera, Clock } from "lucide-react";
-
 const plans = [{
   name: "Degustação",
   photos: 10,
@@ -25,35 +24,28 @@ const plans = [{
   features: ["<strong>50 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte prioritário"],
   popular: false
 }];
-
 export const Pricing = () => {
-  return (
-    <section id="precos" className="py-20">
+  return <section id="precos" className="py-20">
       <div className="container">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Escolha o plano ideal para o tamanho do seu cardápio</span>
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Escolha o plano ideal para o seu cardápio</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Todos os créditos são válidos por 30 dias.
-          </p>
+          
           
           <div className="flex items-center justify-center gap-2 mt-6">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Créditos válidos por 30 dias</span>
+            <span className="text-muted-foreground text-xl">Créditos válidos por 30 dias</span>
           </div>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
-          {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          {plans.map((plan, index) => <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
+              {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-primary text-primary-foreground px-4 py-1">
                     Mais Popular
                   </Badge>
-                </div>
-              )}
+                </div>}
               
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
@@ -68,12 +60,12 @@ export const Pricing = () => {
               </CardHeader>
 
               <CardContent className="space-y-3 flex-1">
-                {plan.features.map((feature, featureIndex) => (
-                  <div key={featureIndex} className="flex items-center gap-3">
+                {plan.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-center gap-3">
                     <Check className="h-4 w-4 text-success flex-shrink-0" />
-                    <span className="text-sm" dangerouslySetInnerHTML={{ __html: feature }}></span>
-                  </div>
-                ))}
+                    <span className="text-sm" dangerouslySetInnerHTML={{
+                __html: feature
+              }}></span>
+                  </div>)}
               </CardContent>
 
               <CardFooter className="mt-auto">
@@ -81,8 +73,7 @@ export const Pricing = () => {
                   Transformar Fotos Agora
                 </Button>
               </CardFooter>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         <div className="text-center mt-12">
@@ -91,6 +82,5 @@ export const Pricing = () => {
           </p>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
