@@ -24,7 +24,15 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="text-lg py-6 px-[109px] mx-[76px]">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="text-lg py-6 px-[109px] mx-[76px]"
+                onClick={() => {
+                  const pricingSection = document.getElementById('precos');
+                  pricingSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
                 <Camera className="h-5 w-5 mr-2" />
                 Transformar Fotos Agora
               </Button>

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Camera, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const plans = [{
   name: "Degustação",
   photos: 10,
@@ -25,6 +26,12 @@ const plans = [{
   popular: false
 }];
 export const Pricing = () => {
+  const navigate = useNavigate();
+
+  const handlePlanSelect = (planName: string) => {
+    navigate(`/auth?plan=${encodeURIComponent(planName)}`);
+  };
+
   return <section id="precos" className="py-20">
       <div className="container">
         <div className="text-center space-y-4 mb-16">
@@ -68,7 +75,12 @@ export const Pricing = () => {
               </CardContent>
 
               <CardFooter className="mt-auto">
-                <Button variant={plan.popular ? "hero" : "default"} className="w-full" size="lg">
+                <Button 
+                  variant={plan.popular ? "hero" : "default"} 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => handlePlanSelect(plan.name)}
+                >
                   <Camera className="h-4 w-4 mr-2" />
                   Transformar Fotos Agora
                 </Button>
