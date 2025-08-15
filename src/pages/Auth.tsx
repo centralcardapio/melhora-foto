@@ -7,8 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { ChefHat, Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { ChefHat, Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
+
+// Password validation functions
+const validatePassword = (password: string) => {
+  const errors = [];
+  if (password.length < 8) errors.push("Comprimento mínimo: A senha deve ter pelo menos 8 caracteres");
+  if (!/[A-Z]/.test(password)) errors.push("Letra maiúscula: Deve conter ao menos uma letra maiúscula");
+  if (!/[a-z]/.test(password)) errors.push("Letra minúscula: Deve conter ao menos uma letra minúscula");
+  if (!/[0-9]/.test(password)) errors.push("Número: Deve conter ao menos um número");
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) errors.push("Caractere especial: Deve conter ao menos um caractere especial");
+  return errors;
+};
+
+const validatePhone = (phone: string) => {
+  const cleanPhone = phone.replace(/\D/g, '');
+  if (cleanPhone.length < 10 || cleanPhone.length > 11) return "O telefone deve ter 10 ou 11 dígitos";
+  if (/^(\d)\1+$/.test(cleanPhone)) return "Número de telefone inválido";
+  return null;
+};
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -16,10 +34,13 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
-  const { signUp, signInWithGoogle, user } = useAuth();
+  const { signUp, signIn, signInWithGoogle, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -27,12 +48,18 @@ const Auth = () => {
     if (user) {
       navigate("/dashboard");
     }
-  }, [user, navigate]);
+    
+    // Check if URL indicates login mode
+    if (searchParams.get("mode") === "login") {
+      setIsLogin(true);
+    }
+  }, [user, navigate, searchParams]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Validate required fields
     if (!email || !password || !name) {
       toast({
         title: "Erro",
@@ -43,10 +70,37 @@ const Auth = () => {
       return;
     }
 
+    // Validate password
+    const passwordValidationErrors = validatePassword(password);
+    if (passwordValidationErrors.length > 0) {
+      toast({
+        title: "Senha não atende aos requisitos",
+        description: passwordValidationErrors.join("; "),
+        variant: "destructive",
+      });
+      setPasswordErrors(passwordValidationErrors);
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate phone if provided
+    if (phone) {
+      const phoneError = validatePhone(phone);
+      if (phoneError) {
+        toast({
+          title: "Telefone inválido",
+          description: phoneError,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+    }
+
     const { error } = await signUp(email, password, {
       first_name: name.split(" ")[0],
       last_name: name.split(" ").slice(1).join(" "),
-      phone: phone,
+      phone: phone.replace(/\D/g, ''),
       full_name: name
     });
 
@@ -60,6 +114,33 @@ const Auth = () => {
       toast({
         title: "Cadastro realizado!",
         description: "Verifique seu e-mail para confirmar a conta.",
+      });
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (!email || !password) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha e-mail e senha.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      toast({
+        title: "Erro no login",
+        description: error.message,
+        variant: "destructive",
       });
     }
 
@@ -104,37 +185,45 @@ const Auth = () => {
           <div className="space-y-6">
             <div className="text-center lg:text-left">
               <h1 className="text-3xl font-bold tracking-tight">
-                Criar conta
+                {isLogin ? "Entrar" : "Criar conta"}
               </h1>
               <p className="text-muted-foreground mt-2">
-                Comece a transformar suas fotos de comida agora mesmo
+                {isLogin 
+                  ? "Acesse sua conta para continuar" 
+                  : "Comece a transformar suas fotos de comida agora mesmo"
+                }
               </p>
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle>Cadastro</CardTitle>
+                <CardTitle>{isLogin ? "Login" : "Cadastro"}</CardTitle>
                 <CardDescription>
-                  Preencha os dados abaixo para criar sua conta
+                  {isLogin 
+                    ? "Entre com seus dados de acesso"
+                    : "Preencha os dados abaixo para criar sua conta"
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome completo *</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="name"
-                        placeholder="Seu nome completo"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
+                <form onSubmit={isLogin ? handleSignIn : handleSignUp} className="space-y-4">
+                  {!isLogin && (
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nome completo *</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          placeholder="Seu nome completo"
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="email">E-mail *</Label>
@@ -152,20 +241,35 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Celular</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="phone"
-                        placeholder="(11) 99999-9999"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="pl-10"
-                      />
+                  {!isLogin && (
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Celular</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          placeholder="(11) 99999-9999"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => {
+                            // Allow only numbers and format
+                            const value = e.target.value.replace(/\D/g, '');
+                            let formattedValue = value;
+                            if (value.length >= 11) {
+                              formattedValue = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7, 11)}`;
+                            } else if (value.length >= 7) {
+                              formattedValue = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
+                            } else if (value.length >= 3) {
+                              formattedValue = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+                            }
+                            setPhone(formattedValue);
+                          }}
+                          className="pl-10"
+                          maxLength={15}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="password">Senha *</Label>
@@ -173,15 +277,36 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="password"
-                        placeholder="Mínimo 6 caracteres"
-                        type="password"
+                        placeholder={isLogin ? "Sua senha" : "Mínimo 8 caracteres"}
+                        type={showPassword ? "text" : "password"}
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10"
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (!isLogin) {
+                            setPasswordErrors(validatePassword(e.target.value));
+                          }
+                        }}
+                        className="pl-10 pr-10"
                         required
-                        minLength={6}
+                        minLength={isLogin ? 1 : 8}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
+                    {!isLogin && passwordErrors.length > 0 && (
+                      <div className="text-xs space-y-1">
+                        {passwordErrors.map((error, index) => (
+                          <div key={index} className="text-destructive flex items-center gap-1">
+                            <span>•</span> {error}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <Button 
@@ -190,7 +315,10 @@ const Auth = () => {
                     size="lg"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Criando conta..." : "Criar conta"}
+                    {isLoading 
+                      ? (isLogin ? "Entrando..." : "Criando conta...") 
+                      : (isLogin ? "Entrar" : "Criar conta")
+                    }
                   </Button>
                 </form>
 
@@ -216,16 +344,31 @@ const Auth = () => {
                   Google
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center">
-                  Ao criar uma conta, você concorda com nossos{" "}
-                  <a href="#" className="underline hover:text-primary">
-                    Termos de Serviço
-                  </a>{" "}
-                  e{" "}
-                  <a href="#" className="underline hover:text-primary">
-                    Política de Privacidade
-                  </a>
-                </p>
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="text-sm text-muted-foreground hover:text-primary underline"
+                  >
+                    {isLogin 
+                      ? "Não tem uma conta? Cadastre-se" 
+                      : "Já tem uma conta? Entrar"
+                    }
+                  </button>
+                </div>
+
+                {!isLogin && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Ao criar uma conta, você concorda com nossos{" "}
+                    <a href="#" className="underline hover:text-primary">
+                      Termos de Serviço
+                    </a>{" "}
+                    e{" "}
+                    <a href="#" className="underline hover:text-primary">
+                      Política de Privacidade
+                    </a>
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
