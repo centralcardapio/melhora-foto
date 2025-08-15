@@ -60,7 +60,7 @@ export const BeforeAfter = () => {
                 <CardContent className="p-0">
                   <div className="relative">
                     <img 
-                      src="/lovable-uploads/81cd1348-ffa0-4bc9-ad8a-0585bcdaa80f.png" 
+                      src="/lovable-uploads/81458f3f-c86e-44ca-8710-af37b95899cd.png" 
                       alt="Foto profissional de hambúrguer com iluminação perfeita" 
                       className="w-full h-[300px] md:h-[400px] object-cover" 
                     />
