@@ -24,8 +24,6 @@ const validatePassword = (password: string) => {
 
 const validatePhone = (phone: string) => {
   const cleanPhone = phone.replace(/\D/g, '');
-  if (cleanPhone.length < 10 || cleanPhone.length > 11) return "Digite um telefone válido";
-  if (/^(\d)\1+$/.test(cleanPhone)) return "Digite um telefone válido";
   return null;
 };
 
