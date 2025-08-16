@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { ChefHat, Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
+import { supabase } from "@/integrations/supabase/client";
 
 // Password validation functions
 const validatePassword = (password: string) => {
@@ -23,8 +24,8 @@ const validatePassword = (password: string) => {
 
 const validatePhone = (phone: string) => {
   const cleanPhone = phone.replace(/\D/g, '');
-  if (cleanPhone.length < 10 || cleanPhone.length > 11) return "O telefone deve ter 10 ou 11 dígitos";
-  if (/^(\d)\1+$/.test(cleanPhone)) return "Número de telefone inválido";
+  if (cleanPhone.length < 10 || cleanPhone.length > 11) return "Digite um telefone válido";
+  if (/^(\d)\1+$/.test(cleanPhone)) return "Digite um telefone válido";
   return null;
 };
 
@@ -37,6 +38,8 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
@@ -147,6 +150,38 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const handleForgotPassword = async () => {
+    if (!resetEmail) {
+      toast({
+        title: "Erro",
+        description: "Por favor, digite seu e-mail.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "E-mail enviado!",
+        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+      });
+      setShowForgotPassword(false);
+      setResetEmail("");
+    }
+    setIsLoading(false);
+  };
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     const { error } = await signInWithGoogle();
@@ -180,7 +215,7 @@ const Auth = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className={`grid grid-cols-1 ${!isLogin ? 'lg:grid-cols-2' : ''} gap-8 max-w-6xl mx-auto`}>
           {/* Registration Form */}
           <div className="space-y-6">
             <div className="text-center lg:text-left">
@@ -364,17 +399,56 @@ const Auth = () => {
                       Termos de Serviço
                     </a>{" "}
                     e{" "}
-                    <a href="#" className="underline hover:text-primary">
+                    <a href="/politica-privacidade" className="underline hover:text-primary">
                       Política de Privacidade
                     </a>
                   </p>
+                )}
+
+                {/* Forgot Password Dialog */}
+                {showForgotPassword && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-background p-6 rounded-lg border max-w-md w-full">
+                      <h3 className="text-lg font-semibold mb-4">Recuperar senha</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Digite seu e-mail para receber um link de recuperação de senha.
+                      </p>
+                      <div className="space-y-4">
+                        <Input
+                          type="email"
+                          placeholder="seu@email.com"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleForgotPassword}
+                            disabled={isLoading}
+                            className="flex-1"
+                          >
+                            {isLoading ? "Enviando..." : "Enviar"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setShowForgotPassword(false);
+                              setResetEmail("");
+                            }}
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Checkout Section */}
-          <div className="space-y-6">
+          {/* Checkout Section - Only show on signup */}
+          {!isLogin && (
+            <div className="space-y-6">
             <div className="text-center lg:text-left">
               <h2 className="text-2xl font-bold tracking-tight">
                 Seu pedido
@@ -411,7 +485,8 @@ const Auth = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
