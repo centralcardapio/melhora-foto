@@ -35,11 +35,24 @@ const ResetPassword = () => {
     const refreshToken = searchParams.get('refresh_token');
     const token = searchParams.get('token');
     const type = searchParams.get('type');
+    const tokenHash = searchParams.get('token_hash');
     
-    console.log('Parâmetros da URL:', { accessToken: !!accessToken, refreshToken: !!refreshToken, token: !!token, type });
+    console.log('Parâmetros da URL:', { 
+      accessToken: !!accessToken, 
+      refreshToken: !!refreshToken, 
+      token: !!token, 
+      type, 
+      tokenHash: !!tokenHash,
+      fullUrl: window.location.href 
+    });
     
-    if ((accessToken && refreshToken) || (token && type === 'recovery')) {
-      // Se temos tokens válidos, definir a sessão
+    // Verificar se é um link de recovery válido
+    const hasValidTokens = (accessToken && refreshToken) || 
+                          (token && type === 'recovery') || 
+                          tokenHash;
+    
+    if (hasValidTokens) {
+      // Se temos tokens de access/refresh, definir a sessão
       if (accessToken && refreshToken) {
         supabase.auth.setSession({
           access_token: accessToken,
@@ -52,10 +65,10 @@ const ResetPassword = () => {
       console.log('Nenhum token válido encontrado, redirecionando...');
       toast({
         title: "Link inválido",
-        description: "Este link de redefinição de senha é inválido ou expirou.",
+        description: "Este link de redefinição de senha é inválido ou expirou. Solicite um novo link.",
         variant: "destructive",
       });
-      navigate("/auth");
+      setTimeout(() => navigate("/auth"), 2000);
     }
   }, [searchParams, navigate, toast]);
 
