@@ -36,11 +36,20 @@ const ResetPassword = () => {
     const token = searchParams.get('token');
     const type = searchParams.get('type');
     
+    console.log('Parâmetros da URL:', { accessToken: !!accessToken, refreshToken: !!refreshToken, token: !!token, type });
+    
     if ((accessToken && refreshToken) || (token && type === 'recovery')) {
-      // Se temos tokens válidos, não fazemos nada - o usuário pode redefinir a senha
+      // Se temos tokens válidos, definir a sessão
+      if (accessToken && refreshToken) {
+        supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+      }
       console.log('Tokens de recuperação encontrados na URL');
     } else {
       // Se não há tokens válidos, redirecionar para login
+      console.log('Nenhum token válido encontrado, redirecionando...');
       toast({
         title: "Link inválido",
         description: "Este link de redefinição de senha é inválido ou expirou.",
