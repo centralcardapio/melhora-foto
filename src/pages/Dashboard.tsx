@@ -4,39 +4,34 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, Camera, CreditCard, LogOut, User } from "lucide-react";
-
 const Dashboard = () => {
-  const { user, signOut, loading } = useAuth();
+  const {
+    user,
+    signOut,
+    loading
+  } = useAuth();
   const navigate = useNavigate();
-
   useEffect(() => {
     if (!loading && !user) {
       navigate("/");
     }
   }, [user, loading, navigate]);
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <ChefHat className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Carregando...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!user) {
     return null;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
@@ -60,9 +55,7 @@ const Dashboard = () => {
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Bem-vindo à sua área de compra de créditos
-            </p>
+            <p className="text-muted-foreground">Bem-vindo à criação das fotos profissionais do seu cardápio</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -81,11 +74,9 @@ const Dashboard = () => {
                   <p className="text-sm">
                     <strong>E-mail:</strong> {user.email}
                   </p>
-                  {user.user_metadata?.phone && (
-                    <p className="text-sm">
+                  {user.user_metadata?.phone && <p className="text-sm">
                       <strong>Telefone:</strong> {user.user_metadata.phone}
-                    </p>
-                  )}
+                    </p>}
                 </div>
               </CardContent>
             </Card>
@@ -142,8 +133,6 @@ const Dashboard = () => {
           </Card>
         </div>
       </main>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
