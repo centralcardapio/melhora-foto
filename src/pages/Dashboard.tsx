@@ -59,27 +59,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Perfil
-                </CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <p className="text-sm">
-                    <strong>Nome:</strong> {user.user_metadata?.full_name || "Não informado"}
-                  </p>
-                  <p className="text-sm">
-                    <strong>E-mail:</strong> {user.email}
-                  </p>
-                  {user.user_metadata?.phone && <p className="text-sm">
-                      <strong>Telefone:</strong> {user.user_metadata.phone}
-                    </p>}
-                </div>
-              </CardContent>
-            </Card>
+            
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
