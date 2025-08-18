@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChefHat, Camera, CreditCard, LogOut, User, ShoppingCart } from "lucide-react";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { PricingPlans } from "@/components/PricingPlans";
+import { supabase } from "@/integrations/supabase/client";
 const Dashboard = () => {
   const {
     user,
@@ -14,7 +15,34 @@ const Dashboard = () => {
     loading
   } = useAuth();
   const navigate = useNavigate();
-  const [availablePhotos, setAvailablePhotos] = useState(0); // TODO: Fetch from user subscription/credits
+  const [availablePhotos, setAvailablePhotos] = useState(0);
+
+  // Fetch photo credits from database
+  useEffect(() => {
+    const fetchPhotoCredits = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('photo_credits')
+            .select('available')
+            .eq('user_id', user.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching photo credits:', error);
+            return;
+          }
+
+          setAvailablePhotos(data?.available || 0);
+        } catch (error) {
+          console.error('Error fetching photo credits:', error);
+        }
+      }
+    };
+
+    fetchPhotoCredits();
+  }, [user]);
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/");
