@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, Camera, CreditCard, LogOut, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ChefHat, Camera, CreditCard, LogOut, User, ShoppingCart } from "lucide-react";
+import { PhotoUpload } from "@/components/PhotoUpload";
+import { PricingPlans } from "@/components/PricingPlans";
 const Dashboard = () => {
   const {
     user,
@@ -11,6 +14,7 @@ const Dashboard = () => {
     loading
   } = useAuth();
   const navigate = useNavigate();
+  const [availablePhotos, setAvailablePhotos] = useState(0); // TODO: Fetch from user subscription/credits
   useEffect(() => {
     if (!loading && !user) {
       navigate("/");
@@ -34,12 +38,25 @@ const Dashboard = () => {
   return <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-foreground">FotoCardápio IA</span>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <ChefHat className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold text-foreground">FotoCardápio IA</span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-sm">
+                <Camera className="h-3 w-3 mr-1" />
+                {availablePhotos} fotos disponíveis
+              </Badge>
+            </div>
           </div>
           
           <div className="flex items-center gap-4">
+            <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Comprar mais fotos profissionais
+            </Button>
             <span className="text-sm text-muted-foreground">
               Olá, {user.user_metadata?.full_name || user.email}
             </span>
@@ -58,59 +75,23 @@ const Dashboard = () => {
             <p className="text-muted-foreground">Bem-vindo à criação das fotos profissionais do seu cardápio</p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            
-
+          {availablePhotos > 0 ? (
+            // User has credits - show photo upload/selection
+            <PhotoUpload availablePhotos={availablePhotos} />
+          ) : (
+            // User has no credits - show pricing plans
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Créditos Disponíveis
-                </CardTitle>
-                <Camera className="h-4 w-4 text-muted-foreground" />
+              <CardHeader>
+                <CardTitle>Planos Disponíveis</CardTitle>
+                <CardDescription>
+                  Escolha um dos planos disponíveis para começar a transformar suas fotos
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">
-                  Fotos restantes
-                </p>
+                <PricingPlans />
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Comprar Créditos
-                </CardTitle>
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" size="sm">
-                  Escolher Plano
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Área de Compra de Créditos</CardTitle>
-              <CardDescription>
-                Escolha um dos planos disponíveis para começar a transformar suas fotos
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center p-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-2">Sistema de Créditos</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Esta área será implementada para permitir a compra de créditos e transformação de fotos
-              </p>
-              <Button variant="outline" onClick={() => navigate("/")}>
-                Ver Planos Disponíveis
-              </Button>
-            </CardContent>
-          </Card>
+          )}
         </div>
       </main>
     </div>;

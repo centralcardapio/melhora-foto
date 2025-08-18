@@ -34,6 +34,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Redirect to dashboard after sign in
+        if (event === 'SIGNED_IN' && session?.user) {
+          window.location.href = '/dashboard';
+        }
       }
     );
 
@@ -77,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: `${window.location.origin}/dashboard`
       }
     });
     return { error };
