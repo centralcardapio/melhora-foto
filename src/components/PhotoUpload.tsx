@@ -15,6 +15,7 @@ export const PhotoUpload = ({
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [ifoodLink, setIfoodLink] = useState('');
   const [importedPhotos, setImportedPhotos] = useState<string[]>([]);
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const {
     toast
   } = useToast();
@@ -37,7 +38,7 @@ export const PhotoUpload = ({
   } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.bmp']
     },
     maxFiles: availablePhotos - uploadedFiles.length
   });
@@ -56,9 +57,10 @@ export const PhotoUpload = ({
 
     // Simulate import (replace with actual API call)
     const mockPhotos = Array.from({
-      length: Math.min(5, availablePhotos)
-    }, (_, i) => `https://picsum.photos/300/200?random=${i + 1}`);
+      length: Math.min(20, availablePhotos * 2) // Import more photos for selection
+    }, (_, i) => `https://picsum.photos/300/200?random=${i + Date.now()}`);
     setImportedPhotos(mockPhotos);
+    setSelectedPhotos(new Set()); // Reset selection
     toast({
       title: "Fotos importadas com sucesso",
       description: `${mockPhotos.length} fotos foram importadas do iFood.`
@@ -75,51 +77,47 @@ export const PhotoUpload = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Upload Manual */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Upload</h3>
-          
-          <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}`}>
-            <input {...getInputProps()} />
-            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <div className="space-y-2">
-              <p className="text-lg font-medium">
-                {isDragActive ? 'Solte as fotos aqui' : 'Arraste e solte suas fotos aqui'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ou clique para selecionar arquivos
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Formatos aceitos: JPG, PNG, WebP
-              </p>
-            </div>
-          </div>
-
-          {uploadedFiles.length > 0 && <div>
-              <h4 className="font-medium mb-3">Fotos selecionadas ({uploadedFiles.length}/{availablePhotos})</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {uploadedFiles.map((file, index) => <div key={index} className="relative group">
-                    <img src={URL.createObjectURL(file)} alt={`Upload ${index + 1}`} className="w-full h-20 object-cover rounded-lg" />
-                    <button onClick={() => removeFile(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>)}
+        {/* Upload Options - Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Upload Manual */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Upload</h3>
+            
+            <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}`}>
+              <input {...getInputProps()} />
+              <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+              <div className="space-y-2">
+                <p className="font-medium">
+                  {isDragActive ? 'Solte as fotos aqui' : 'Arraste e solte suas fotos aqui'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  ou clique para selecionar arquivos
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Formatos aceitos: JPG, JPEG, PNG, WebP, BMP
+                </p>
               </div>
-            </div>}
-        </div>
+            </div>
 
-        {/* Divisor */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            {uploadedFiles.length > 0 && (
+              <div>
+                <h4 className="font-medium mb-3">Fotos selecionadas ({uploadedFiles.length}/{availablePhotos})</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {uploadedFiles.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <img src={URL.createObjectURL(file)} alt={`Upload ${index + 1}`} className="w-full h-16 object-cover rounded-lg" />
+                      <button onClick={() => removeFile(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">ou</span>
-          </div>
-        </div>
 
-        {/* Importação iFood */}
-        <div className="space-y-4">
+          {/* Importação iFood */}
+          <div className="space-y-4">
           <h3 className="text-lg font-semibold">Importação do iFood</h3>
           
           <div className="space-y-3">
@@ -132,24 +130,69 @@ export const PhotoUpload = ({
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              <strong>Importante:</strong> Serão importadas as primeiras fotos até o limite das fotos contratadas.
+              <strong>Importante:</strong> Serão importadas todas as fotos do seu cardápio para que você possa selecionar quais fotos deseja profissionalizar
             </p>
           </div>
 
-          {importedPhotos.length > 0 && <div>
-              <h4 className="font-medium mb-3">Fotos importadas ({importedPhotos.length})</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {importedPhotos.map((photo, index) => <img key={index} src={photo} alt={`Importada ${index + 1}`} className="w-full h-20 object-cover rounded-lg" />)}
+          {importedPhotos.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">
+                Fotos importadas ({importedPhotos.length}) - Selecione até {availablePhotos} fotos
+                {selectedPhotos.size > 0 && (
+                  <span className="ml-2 text-primary">({selectedPhotos.size} selecionadas)</span>
+                )}
+              </h4>
+              <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
+                {importedPhotos.map((photo, index) => {
+                  const isSelected = selectedPhotos.has(index);
+                  const canSelect = selectedPhotos.size < availablePhotos || isSelected;
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className={`relative cursor-pointer transition-all ${
+                        isSelected ? 'ring-2 ring-primary ring-offset-2' : ''
+                      } ${!canSelect && !isSelected ? 'opacity-50' : ''}`}
+                      onClick={() => {
+                        if (!canSelect && !isSelected) return;
+                        
+                        const newSelected = new Set(selectedPhotos);
+                        if (isSelected) {
+                          newSelected.delete(index);
+                        } else {
+                          newSelected.add(index);
+                        }
+                        setSelectedPhotos(newSelected);
+                      }}
+                    >
+                      <img 
+                        src={photo} 
+                        alt={`Importada ${index + 1}`} 
+                        className="w-full h-16 object-cover rounded-lg" 
+                      />
+                      {isSelected && (
+                        <div className="absolute top-1 right-1 bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                          ✓
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            </div>}
+            </div>
+          )}
         </div>
 
-        {(uploadedFiles.length > 0 || importedPhotos.length > 0) && <div className="pt-4 border-t">
+        </div>
+
+        {(uploadedFiles.length > 0 || selectedPhotos.size > 0) && (
+          <div className="pt-4 border-t">
             <Button size="lg" className="w-full">
               <Download className="h-4 w-4 mr-2" />
-              Transformar {uploadedFiles.length + importedPhotos.length} Fotos
+              Transformar {uploadedFiles.length + selectedPhotos.size} Fotos
             </Button>
-          </div>}
+          </div>
+        )}
       </CardContent>
     </Card>;
 };

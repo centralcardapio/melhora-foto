@@ -81,10 +81,16 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Comprar mais fotos profissionais
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
+                <User className="h-4 w-4 mr-2" />
+                Alterar estilo
+              </Button>
+              <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Comprar mais fotos
+              </Button>
+            </div>
             <span className="text-sm text-muted-foreground">
               Olá, {user.user_metadata?.full_name || user.email}
             </span>
