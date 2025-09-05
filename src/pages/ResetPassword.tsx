@@ -138,7 +138,7 @@ const ResetPassword = () => {
           </Button>
           <div className="flex items-center gap-2 ml-4">
             <ChefHat className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">FotoCardápio IA</span>
+            <span className="text-lg font-bold">Fotos Profissionais</span>
           </div>
         </div>
 

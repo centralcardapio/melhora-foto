@@ -28,7 +28,7 @@ const CookieConsent = () => {
       <div className="container mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1">
           <p className="text-sm text-muted-foreground">
-            A FotoCardápio IA utiliza cookies e outras tecnologias semelhantes para melhorar a sua experiência, de acordo com a nossa{" "}
+            A Fotos Profissionais utiliza cookies e outras tecnologias semelhantes para melhorar a sua experiência, de acordo com a nossa{" "}
             <a 
               href="/politica-privacidade" 
               className="text-primary hover:underline font-medium"

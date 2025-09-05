@@ -25,18 +25,33 @@ const StyleSelection = () => {
   }, {
     id: "pub-moderno",
     name: "Pub Moderno",
-    description: "Prato robusto, ambientação urbana, bebida ao fundo",
+    description: "Ambientação urbana e bebida ao fundo",
     image: pubModernoImg
   }, {
     id: "cafe-aconchegante",
     name: "Café Aconchegante",
-    description: "Sobremesa acompanhada de bebida quente, luz quente e composição afetiva",
+    description: "Prato acompanhado de bebida quente, luz quente e composição afetiva",
     image: cafeAconchegante
+  }, {
+    id: "rustico-madeira",
+    name: "Rústico de Madeira",
+    description: "Fundo de madeira e estilo acolhedor",
+    image: rusticoMadeira
+  }, {
+    id: "contemporaneo-asiatico",
+    name: "Contemporâneo Asiático",
+    description: "Louça escura, fundo neutro, composição refinada",
+    image: contemporaneoAsiatico
   }, {
     id: "moderno-gourmet",
     name: "Moderno Gourmet",
     description: "Prato sofisticado, louça texturizada, fundo neutro",
     image: modernoGourmet
+  }, {
+    id: "saudavel-vibrante",
+    name: "Saudável & Vibrante",
+    description: "Ingredientes frescos e bebida natural",
+    image: saudavelVibrante
   }, {
     id: "clean-minimalista",
     name: "Clean & Minimalista",
@@ -47,26 +62,15 @@ const StyleSelection = () => {
     name: "Alta Gastronomia",
     description: "Montagem artística, fundo escuro, taça de vinho",
     image: altaGastronomia
-  }, {
-    id: "contemporaneo-asiatico",
-    name: "Contemporâneo Asiático",
-    description: "Louça escura, fundo neutro, composição refinada",
-    image: contemporaneoAsiatico
-  }, {
-    id: "saudavel-vibrante",
-    name: "Saudável & Vibrante",
-    description: "Ingredientes frescos e bebida natural",
-    image: saudavelVibrante
-  }, {
-    id: "rustico-madeira",
-    name: "Rústico de Madeira",
-    description: "Fundo de madeira e estilo acolhedor",
-    image: rusticoMadeira
   }];
   const handleStyleSelect = (styleId: string) => {
     setSelectedStyle(styleId);
   };
   const handleContinue = () => {
+    if (!selectedStyle) {
+      alert('É necessário escolher um estilo para avançar');
+      return;
+    }
     // Save selected style to localStorage for now
     // Later this should be saved to the database
     localStorage.setItem('selectedStyle', selectedStyle);
@@ -82,7 +86,7 @@ const StyleSelection = () => {
             </Button>
             <div className="flex items-center gap-2">
               <ChefHat className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">FotoCardápio IA</span>
+              <span className="text-xl font-bold text-foreground">Fotos Profissionais</span>
             </div>
           </div>
         </div>
@@ -92,11 +96,11 @@ const StyleSelection = () => {
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center space-y-4">
             <h1 className="text-3xl font-bold tracking-tight">Escolha o estilo que melhor representa o seu restaurante</h1>
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <p className="text-muted-foreground mb-4">
             </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                <p className="text-base text-blue-800 dark:text-blue-200">
                   <strong>💡 Dica importante:</strong> A seleção adequada do estilo conforme o perfil do seu restaurante é essencial para otimizar suas fotos de acordo com o perfil dos seus clientes e maximizar a conversão de vendas.
                 </p>
               </div>
@@ -117,11 +121,15 @@ const StyleSelection = () => {
               </Card>)}
           </div>
 
-          {selectedStyle && <div className="flex justify-center">
-              <Button onClick={handleContinue} size="lg">
-                Selecionar fotos
-              </Button>
-            </div>}
+          <div className="flex justify-center">
+            <Button 
+              onClick={handleContinue} 
+              size="lg"
+              className={`px-12 py-4 text-lg ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
+            >
+              Profissionalizar fotos com o estilo escolhido
+            </Button>
+          </div>
         </div>
       </main>
     </div>;
