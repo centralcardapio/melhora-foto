@@ -16,9 +16,15 @@ export const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Produto</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#como-funciona" className="hover:text-foreground transition-colors">Como Funciona</a></li>
+              <li><button onClick={() => {
+                const section = document.getElementById('como-funciona');
+                section?.scrollIntoView({ behavior: 'smooth' });
+              }} className="hover:text-foreground transition-colors cursor-pointer">Como Funciona</button></li>
               <li><a href="#precos" className="hover:text-foreground transition-colors">Planos</a></li>
-              <li><a href="#perguntas-frequentes" className="hover:text-foreground transition-colors">FAQ</a></li>
+              <li><button onClick={() => {
+                const section = document.getElementById('perguntas-frequentes');
+                section?.scrollIntoView({ behavior: 'smooth' });
+              }} className="hover:text-foreground transition-colors cursor-pointer">FAQ</button></li>
             </ul>
           </div>
 

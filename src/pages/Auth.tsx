@@ -462,19 +462,6 @@ const Auth = () => {
               </CardContent>
             </Card>
           </div>
-
-          {!isLogin && (
-            <div className="text-center mt-8">
-              <Button 
-                variant="default" 
-                size="lg"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8"
-                onClick={() => navigate("/style-selection")}
-              >
-                Experimentar fotos profissionais gratuitas
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>

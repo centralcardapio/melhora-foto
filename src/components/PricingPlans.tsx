@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Check, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const plans = [
   {
@@ -33,8 +34,10 @@ const plans = [
 
 export const PricingPlans = () => {
   const navigate = useNavigate();
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   const handlePlanSelect = (planName: string) => {
+    setSelectedPlan(planName);
     // TODO: Implement payment flow
     console.log(`Selected plan: ${planName}`);
   };
@@ -44,7 +47,7 @@ export const PricingPlans = () => {
       {plans.map((plan, index) => (
         <Card 
           key={index} 
-          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
+          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} ${selectedPlan === plan.name ? 'bg-orange-50' : ''} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
           onClick={() => handlePlanSelect(plan.name)}
         >
           {plan.popular && (
@@ -75,12 +78,6 @@ export const PricingPlans = () => {
             ))}
           </CardContent>
 
-          <CardFooter className="mt-auto">
-            <div className="w-full text-center py-4 bg-muted/30 rounded-lg">
-              <Camera className="h-5 w-5 mx-auto mb-2 text-primary" />
-              <span className="text-sm font-medium">Clique para selecionar</span>
-            </div>
-          </CardFooter>
         </Card>
       ))}
     </div>

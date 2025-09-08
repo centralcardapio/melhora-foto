@@ -39,16 +39,16 @@ export const Hero = () => {
 
             <div className="flex items-center justify-center gap-8 pt-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">+57%</div>
+                <div className="text-3xl font-bold text-primary">+35%</div>
                 <div className="text-sm text-muted-foreground">Aumento médio em vendas</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">15x</div>
+                <div className="text-3xl font-bold text-primary">&gt;20x</div>
                 <div className="text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">90s</div>
-                <div className="text-sm text-muted-foreground">Tempo médio de processamento</div>
+                <div className="text-3xl font-bold text-primary">24h</div>
+                <div className="text-sm text-muted-foreground">Pronto no mesmo dia</div>
               </div>
             </div>
           </div>
@@ -65,8 +65,8 @@ export const Hero = () => {
                   <TrendingUp className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <div className="font-semibold">Vendas aumentaram</div>
-                  <div className="text-sm text-muted-foreground">em 57% no primeiro mês</div>
+                  <div className="font-semibold">Vendas aumentaram muito</div>
+                  <div className="text-sm text-muted-foreground">com fotos profissionais</div>
                 </div>
               </div>
             </div>

@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, userData: any) => {
-    const redirectUrl = `${window.location.origin}/auth-redirect`;
+    const redirectUrl = `${window.location.origin}/plans`;
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth-redirect`
+        redirectTo: `${window.location.origin}/plans`
       }
     });
     return { error };

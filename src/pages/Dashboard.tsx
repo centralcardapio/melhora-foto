@@ -83,7 +83,7 @@ const Dashboard = () => {
           
           <div className="flex items-center gap-4">
             <span className="text-sm font-bold">
-              Olá, {user.user_metadata?.full_name || user.email}
+              {user.user_metadata?.full_name || user.email}
             </span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
