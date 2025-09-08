@@ -3,9 +3,42 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, ArrowLeft, Check } from "lucide-react";
 import { PricingPlans } from "@/components/PricingPlans";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Plans = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [availableCredits, setAvailableCredits] = useState(0);
+  const [hasUsedCredits, setHasUsedCredits] = useState(false);
+
+  // Fetch user's credit information
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('photo_credits')
+          .select('available, total_used')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching credits:', error);
+          return;
+        }
+
+        setAvailableCredits(data?.available || 0);
+        setHasUsedCredits((data?.total_used || 0) > 0);
+      } catch (error) {
+        console.error('Error fetching credits:', error);
+      }
+    };
+
+    fetchCredits();
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,6 +112,20 @@ const Plans = () => {
                       Garantia de satisfação
                     </div>
                   </div>
+
+                  {/* Show free trial button if user hasn't used their initial credits */}
+                  {user && availableCredits > 0 && !hasUsedCredits && (
+                    <div className="pt-4 border-t">
+                      <Button 
+                        variant="default" 
+                        size="lg"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                        onClick={() => navigate("/dashboard")}
+                      >
+                        Experimentar 2 fotos profissionais gratuitas
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="pt-4 border-t">
                     <p className="text-xs text-muted-foreground text-center">

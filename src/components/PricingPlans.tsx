@@ -42,7 +42,11 @@ export const PricingPlans = () => {
   return (
     <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
       {plans.map((plan, index) => (
-        <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
+        <Card 
+          key={index} 
+          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
+          onClick={() => handlePlanSelect(plan.name)}
+        >
           {plan.popular && (
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
               <Badge className="bg-primary text-primary-foreground px-4 py-1">
@@ -72,15 +76,10 @@ export const PricingPlans = () => {
           </CardContent>
 
           <CardFooter className="mt-auto">
-            <Button 
-              variant={plan.popular ? "hero" : "default"} 
-              className="w-full" 
-              size="lg"
-              onClick={() => handlePlanSelect(plan.name)}
-            >
-              <Camera className="h-4 w-4 mr-2" />
-              Comprar Fotos Profissionais
-            </Button>
+            <div className="w-full text-center py-4 bg-muted/30 rounded-lg">
+              <Camera className="h-5 w-5 mx-auto mb-2 text-primary" />
+              <span className="text-sm font-medium">Clique para selecionar</span>
+            </div>
           </CardFooter>
         </Card>
       ))}

@@ -120,7 +120,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Cadastro realizado!",
-        description: "Verifique seu e-mail para confirmar a conta.",
+        description: "Confirme sua conta no e-mail recebido para continuar.",
       });
     }
 
@@ -219,7 +219,7 @@ const Auth = () => {
           </div>
         </div>
 
-        <div className={`grid grid-cols-1 ${!isLogin ? 'lg:grid-cols-2' : ''} gap-8 max-w-6xl mx-auto`}>
+        <div className="grid grid-cols-1 gap-8 max-w-2xl mx-auto">
           {/* Registration Form */}
           <div className="space-y-6">
             <div className="text-center lg:text-left">
@@ -463,54 +463,16 @@ const Auth = () => {
             </Card>
           </div>
 
-          {/* Checkout Section - Only show on signup */}
           {!isLogin && (
-            <div className="space-y-6">
-            <div className="text-center lg:text-left">
-              <h2 className="text-2xl font-bold tracking-tight">
-                Seu pedido
-              </h2>
-              <p className="text-muted-foreground mt-2">
-                {plan ? `Plano selecionado: ${plan}` : "Resumo do seu pedido"}
-              </p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Checkout</CardTitle>
-                <CardDescription>
-                  Processamento do pagamento será habilitado após o cadastro
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center p-8 bg-muted/50 rounded-lg">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ChefHat className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Área de Pagamento</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Complete o cadastro para prosseguir com o pagamento do seu plano
-                  </p>
-                  {plan && (
-                    <div className="mt-4 p-3 bg-background rounded border">
-                      <p className="font-medium">Plano: {plan}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Detalhes do plano serão exibidos aqui
-                      </p>
-                    </div>
-                  )}
-                </div>
-                
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
-                  onClick={() => navigate("/style-selection")}
-                >
-                  Experimentar fotos profissionais gratuitas
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="text-center mt-8">
+              <Button 
+                variant="default" 
+                size="lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+                onClick={() => navigate("/style-selection")}
+              >
+                Experimentar fotos profissionais gratuitas
+              </Button>
             </div>
           )}
         </div>

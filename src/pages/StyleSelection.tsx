@@ -127,8 +127,6 @@ const StyleSelection = () => {
       return;
     }
 
-    setIsLoading(true);
-    
     try {
       const { error } = await supabase
         .from('user_styles')
@@ -144,11 +142,6 @@ const StyleSelection = () => {
         throw error;
       }
 
-      toast({
-        title: "Estilo selecionado!",
-        description: `Você escolheu o estilo ${styles.find(s => s.id === selectedStyle)?.name}`,
-      });
-
       navigate("/dashboard");
     } catch (error) {
       console.error('Error saving style:', error);
@@ -157,8 +150,6 @@ const StyleSelection = () => {
         description: "Não foi possível salvar o estilo selecionado. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
   return <div className="min-h-screen bg-background">
@@ -210,10 +201,9 @@ const StyleSelection = () => {
             <Button 
               onClick={handleContinue} 
               size="lg"
-              disabled={isLoading}
               className={`px-12 py-4 text-lg ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
             >
-              {isLoading ? "Salvando..." : "Profissionalizar fotos com o estilo escolhido"}
+              Profissionalizar fotos com o estilo escolhido
             </Button>
           </div>
         </div>

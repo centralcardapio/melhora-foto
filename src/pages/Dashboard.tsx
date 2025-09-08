@@ -82,7 +82,7 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm font-bold">
               Olá, {user.user_metadata?.full_name || user.email}
             </span>
             <div className="flex items-center gap-2">
@@ -96,14 +96,14 @@ const Dashboard = () => {
                 className="bg-orange-500 hover:bg-orange-600 text-white"
                 onClick={() => navigate("/plans")}
               >
-                <ShoppingCart className="h-4 w-4 mr-1" />
+                <ShoppingCart className="h-4 w-4 mr-2" />
                 Comprar mais fotos
               </Button>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
+                  <span className="font-bold">{user.user_metadata?.full_name || user.email}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

@@ -4,19 +4,19 @@ import { Palette, Upload, CheckCircle, Download } from "lucide-react";
 export const HowItWorks = () => {
   const steps = [{
     icon: Palette,
-    title: "Selecionar o estilo do seu restaurante",
+    title: "Selecione o estilo do seu restaurante",
     description: "Escolha entre 9 estilos profissionais que melhor representam a identidade visual do seu estabelecimento."
   }, {
     icon: Upload,
-    title: "Selecionar as fotos",
+    title: "Selecione as fotos para transformação",
     description: "Via upload direto ou importação direta do cardápio do iFood para máxima praticidade."
   }, {
     icon: CheckCircle,
-    title: "Validar ou ajustar as fotos processadas",
+    title: "Valide as fotos transformadas",
     description: "Revise e aprove as transformações feitas pela nossa IA ou solicite ajustes se necessário."
   }, {
     icon: Download,
-    title: "Download das fotos para vender mais!",
+    title: "Faça download das fotos",
     description: "Baixe suas fotos profissionais em alta qualidade e comece a aumentar suas vendas no delivery."
   }];
   return <section className="bg-muted/30 py-20">
