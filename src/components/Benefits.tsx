@@ -25,7 +25,7 @@ const benefits = [{
   icon: DollarSign,
   title: "Custo Benefício",
   description: "Muito mais barato que contratar um fotógrafo profissional para todo o cardápio",
-  highlight: "muito mais barato"
+  highlight: "Muito mais barato"
 }, {
   icon: Clock,
   title: "Resultado Rápido",
