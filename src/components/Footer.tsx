@@ -17,13 +17,29 @@ export const Footer = () => {
             <h3 className="text-sm font-semibold">Produto</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><button onClick={() => {
-                const section = document.getElementById('como-funciona');
-                section?.scrollIntoView({ behavior: 'smooth' });
+                const element = document.getElementById('antes-depois');
+                if (element) {
+                  const y = element.offsetTop - 100;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
               }} className="hover:text-foreground transition-colors cursor-pointer">Como Funciona</button></li>
-              <li><a href="#precos" className="hover:text-foreground transition-colors">Planos</a></li>
+              <li><a 
+                href="#precos" 
+                className="hover:text-foreground transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById('precos');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >Planos</a></li>
               <li><button onClick={() => {
-                const section = document.getElementById('perguntas-frequentes');
-                section?.scrollIntoView({ behavior: 'smooth' });
+                const element = document.getElementById('faq');
+                if (element) {
+                  const y = element.offsetTop - 50;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
               }} className="hover:text-foreground transition-colors cursor-pointer">FAQ</button></li>
             </ul>
           </div>
