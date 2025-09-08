@@ -47,7 +47,7 @@ export const Hero = () => {
                 <div className="text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary">24h</div>
+                <div className="text-3xl font-bold text-primary"><1h</div>
                 <div className="text-sm text-muted-foreground">Pronto no mesmo dia</div>
               </div>
             </div>
