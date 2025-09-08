@@ -43,16 +43,20 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
-  const { signUp, signIn, signInWithGoogle, user, hasSelectedStyle } = useAuth();
+  const { signUp, signIn, signInWithGoogle, user, hasSelectedStyle, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      // Check if user has selected a style
+    console.log('Auth page useEffect - user:', !!user, 'hasSelectedStyle:', hasSelectedStyle, 'loading:', loading);
+    
+    if (!loading && user) {
+      // User is authenticated, check if they have selected a style
       if (hasSelectedStyle === true) {
+        console.log('Redirecting to dashboard');
         navigate("/dashboard");
       } else if (hasSelectedStyle === false) {
+        console.log('Redirecting to style selection');
         navigate("/style-selection");
       }
       // If hasSelectedStyle is null, we're still checking
@@ -62,7 +66,7 @@ const Auth = () => {
     if (searchParams.get("mode") === "login") {
       setIsLogin(true);
     }
-  }, [user, navigate, searchParams, hasSelectedStyle]);
+  }, [user, navigate, searchParams, hasSelectedStyle, loading]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();

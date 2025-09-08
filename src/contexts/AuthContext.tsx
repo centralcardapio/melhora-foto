@@ -32,17 +32,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkUserStyle = async (userId?: string): Promise<boolean> => {
     const id = userId || user?.id;
-    if (!id) return false;
+    if (!id) {
+      console.log('No user ID available for style check');
+      return false;
+    }
 
     try {
+      console.log('Checking style for user:', id);
       const { data, error } = await supabase
         .from('user_styles')
         .select('selected_style')
         .eq('user_id', id)
         .single();
 
+      console.log('Style check result:', { data, error });
       const styleExists = !error && !!data?.selected_style;
       setHasSelectedStyle(styleExists);
+      console.log('Style exists:', styleExists);
       return styleExists;
     } catch (error) {
       console.error('Error checking user style:', error);
@@ -54,13 +60,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state change:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Check if user has selected a style
-          await checkUserStyle(session.user.id);
+          // Check if user has selected a style after state update
+          setTimeout(() => {
+            checkUserStyle(session.user.id);
+          }, 0);
         } else {
           setHasSelectedStyle(null);
         }
@@ -70,12 +79,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await checkUserStyle(session.user.id);
+        setTimeout(() => {
+          checkUserStyle(session.user.id);
+        }, 0);
       } else {
         setHasSelectedStyle(null);
       }
