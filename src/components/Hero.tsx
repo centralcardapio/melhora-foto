@@ -65,8 +65,8 @@ export const Hero = () => {
                   <TrendingUp className="h-6 w-6 text-success" />
                 </div>
                 <div>
-                  <div className="font-semibold">Vendas aumentaram muito</div>
-                  <div className="text-sm text-muted-foreground">com fotos profissionais</div>
+                  <div className="font-semibold">"Vendas aumentaram muito</div>
+                  <div className="text-sm text-muted-foreground">com fotos profissionais"</div>
                 </div>
               </div>
             </div>
