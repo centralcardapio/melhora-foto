@@ -18,13 +18,45 @@ export const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#antes-depois" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a 
+            href="#antes-depois" 
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              const element = document.getElementById('antes-depois');
+              if (element) {
+                const y = element.offsetTop - 100;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }}
+          >
             Como Funciona
           </a>
-          <a href="#precos" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a 
+            href="#precos" 
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              const element = document.getElementById('precos');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
             Planos
           </a>
-          <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a 
+            href="#faq" 
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              const element = document.getElementById('faq');
+              if (element) {
+                const y = element.offsetTop - 50;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }}
+          >
             FAQ
           </a>
         </nav>

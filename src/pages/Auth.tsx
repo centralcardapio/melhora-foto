@@ -43,27 +43,33 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
-  const { signUp, signIn, signInWithGoogle, user } = useAuth();
+  const { signUp, signIn, signInWithGoogle, user, hasSelectedStyle } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      // Check if user has selected a style
+      if (hasSelectedStyle === true) {
+        navigate("/dashboard");
+      } else if (hasSelectedStyle === false) {
+        navigate("/style-selection");
+      }
+      // If hasSelectedStyle is null, we're still checking
     }
     
     // Check if URL indicates login mode
     if (searchParams.get("mode") === "login") {
       setIsLogin(true);
     }
-  }, [user, navigate, searchParams]);
+  }, [user, navigate, searchParams, hasSelectedStyle]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     // Validate required fields
-    if (!email || !password || !name) {
+    if (!email || !password || !name || !phone) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios.",
@@ -86,18 +92,16 @@ const Auth = () => {
       return;
     }
 
-    // Validate phone if provided
-    if (phone) {
-      const phoneError = validatePhone(phone);
-      if (phoneError) {
-        toast({
-          title: "Telefone inválido",
-          description: phoneError,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
+    // Validate phone
+    const phoneError = validatePhone(phone);
+    if (phoneError) {
+      toast({
+        title: "Telefone inválido",
+        description: phoneError,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
     }
 
     const { error } = await signUp(email, password, {
@@ -278,7 +282,7 @@ const Auth = () => {
 
                   {!isLogin && (
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Celular</Label>
+                      <Label htmlFor="phone">Celular *</Label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -301,6 +305,7 @@ const Auth = () => {
                           }}
                           className="pl-10"
                           maxLength={15}
+                          required
                         />
                       </div>
                     </div>
@@ -495,6 +500,15 @@ const Auth = () => {
                     </div>
                   )}
                 </div>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white border-orange-500 hover:border-orange-600"
+                  onClick={() => navigate("/style-selection")}
+                >
+                  Experimentar fotos profissionais gratuitas
+                </Button>
               </CardContent>
             </Card>
             </div>

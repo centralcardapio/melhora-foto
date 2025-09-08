@@ -47,12 +47,6 @@ export const BeforeAfter = () => {
               </div>
             </div>
 
-            {/* Seta central */}
-            <div className="flex justify-center lg:justify-start">
-              <div className="bg-primary rounded-full p-4 shadow-lg">
-                <ArrowRight className="h-8 w-8 text-primary-foreground" />
-              </div>
-            </div>
 
             {/* DEPOIS */}
             <div className="space-y-4 lg:col-start-2 lg:row-start-1">

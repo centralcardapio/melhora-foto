@@ -17,7 +17,7 @@ export const Footer = () => {
             <h3 className="text-sm font-semibold">Produto</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="#como-funciona" className="hover:text-foreground transition-colors">Como Funciona</a></li>
-              <li><a href="#precos" className="hover:text-foreground transition-colors">Preços</a></li>
+              <li><a href="#precos" className="hover:text-foreground transition-colors">Planos</a></li>
               <li><a href="#faq" className="hover:text-foreground transition-colors">FAQ</a></li>
             </ul>
           </div>
@@ -43,7 +43,7 @@ export const Footer = () => {
             © 2024 Central do Cardápio. Todos os direitos reservados.
           </p>
           <p className="text-sm text-muted-foreground">
-            Desenvolvido com 💙 para restaurantes brasileiros
+            Desenvolvido com <span className="text-orange-500">🧡</span> para restaurantes brasileiros
           </p>
         </div>
       </div>

@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, Camera, CreditCard, LogOut, User, ShoppingCart } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChefHat, Camera, User, ShoppingCart, LogOut, ChevronDown } from "lucide-react";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { PricingPlans } from "@/components/PricingPlans";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,23 +82,38 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              Olá, {user.user_metadata?.full_name || user.email}
+            </span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
                 <User className="h-4 w-4 mr-2" />
                 Alterar estilo
               </Button>
-              <Button variant="default" size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
-                <ShoppingCart className="h-4 w-4 mr-2" />
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+                onClick={() => navigate("/plans")}
+              >
+                <ShoppingCart className="h-4 w-4 mr-1" />
                 Comprar mais fotos
               </Button>
             </div>
-            <span className="text-sm text-muted-foreground">
-              Olá, {user.user_metadata?.full_name || user.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

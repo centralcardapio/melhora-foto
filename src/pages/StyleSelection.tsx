@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, ArrowLeft } from "lucide-react";
+import { ChefHat, ArrowLeft, Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 // Import all style images
 import classicoItalianoImg from "@/assets/classico-italiano.jpg";
@@ -14,67 +17,149 @@ import altaGastronomia from "@/assets/alta-gastronomia.jpg";
 import contemporaneoAsiatico from "@/assets/contemporaneo-asiatico.jpg";
 import saudavelVibrante from "@/assets/saudavel-vibrante.jpg";
 import rusticoMadeira from "@/assets/rustico-madeira.jpg";
+
 const StyleSelection = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedStyle, setSelectedStyle] = useState<string>("");
-  const styles = [{
-    id: "classico-italiano",
-    name: "Clássico Italiano",
-    description: "Prato rústico com massa, fundo escuro, madeira e luz suave",
-    image: classicoItalianoImg
-  }, {
-    id: "pub-moderno",
-    name: "Pub Moderno",
-    description: "Ambientação urbana e bebida ao fundo",
-    image: pubModernoImg
-  }, {
-    id: "cafe-aconchegante",
-    name: "Café Aconchegante",
-    description: "Prato acompanhado de bebida quente, luz quente e composição afetiva",
-    image: cafeAconchegante
-  }, {
-    id: "rustico-madeira",
-    name: "Rústico de Madeira",
-    description: "Fundo de madeira e estilo acolhedor",
-    image: rusticoMadeira
-  }, {
-    id: "contemporaneo-asiatico",
-    name: "Contemporâneo Asiático",
-    description: "Louça escura, fundo neutro, composição refinada",
-    image: contemporaneoAsiatico
-  }, {
-    id: "moderno-gourmet",
-    name: "Moderno Gourmet",
-    description: "Prato sofisticado, louça texturizada, fundo neutro",
-    image: modernoGourmet
-  }, {
-    id: "saudavel-vibrante",
-    name: "Saudável & Vibrante",
-    description: "Ingredientes frescos e bebida natural",
-    image: saudavelVibrante
-  }, {
-    id: "clean-minimalista",
-    name: "Clean & Minimalista",
-    description: "Prato leve, fundo branco, composição centralizada",
-    image: cleanMinimalista
-  }, {
-    id: "alta-gastronomia",
-    name: "Alta Gastronomia",
-    description: "Montagem artística, fundo escuro, taça de vinho",
-    image: altaGastronomia
-  }];
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const styles = [
+    {
+      id: "classico-italiano",
+      name: "Clássico Italiano",
+      description: "Prato rústico com massa, fundo escuro, madeira e luz suave",
+      image: classicoItalianoImg
+    },
+    {
+      id: "pub-moderno",
+      name: "Pub Moderno",
+      description: "Ambientação urbana e bebida ao fundo",
+      image: pubModernoImg
+    },
+    {
+      id: "cafe-aconchegante",
+      name: "Café Aconchegante",
+      description: "Prato acompanhado de bebida quente, luz quente e composição afetiva",
+      image: cafeAconchegante
+    },
+    {
+      id: "rustico-madeira",
+      name: "Rústico de Madeira",
+      description: "Fundo de madeira e estilo acolhedor",
+      image: rusticoMadeira
+    },
+    {
+      id: "contemporaneo-asiatico",
+      name: "Contemporâneo Asiático",
+      description: "Louça escura, fundo neutro, composição refinada",
+      image: contemporaneoAsiatico
+    },
+    {
+      id: "moderno-gourmet",
+      name: "Moderno Gourmet",
+      description: "Prato sofisticado, louça texturizada, fundo neutro",
+      image: modernoGourmet
+    },
+    {
+      id: "saudavel-vibrante",
+      name: "Saudável & Vibrante",
+      description: "Ingredientes frescos e bebida natural",
+      image: saudavelVibrante
+    },
+    {
+      id: "clean-minimalista",
+      name: "Clean & Minimalista",
+      description: "Prato leve, fundo branco, composição centralizada",
+      image: cleanMinimalista
+    },
+    {
+      id: "alta-gastronomia",
+      name: "Alta Gastronomia",
+      description: "Montagem artística, fundo escuro, taça de vinho",
+      image: altaGastronomia
+    }
+  ];
+
+  // Check if user already has a selected style
+  useEffect(() => {
+    const checkExistingStyle = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('user_styles')
+          .select('selected_style')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking existing style:', error);
+          return;
+        }
+
+        if (data?.selected_style) {
+          setSelectedStyle(data.selected_style);
+        }
+      } catch (error) {
+        console.error('Error checking existing style:', error);
+      }
+    };
+
+    checkExistingStyle();
+  }, [user]);
+
   const handleStyleSelect = (styleId: string) => {
     setSelectedStyle(styleId);
   };
-  const handleContinue = () => {
+
+  const handleContinue = async () => {
     if (!selectedStyle) {
       alert('É necessário escolher um estilo para avançar');
       return;
     }
-    // Save selected style to localStorage for now
-    // Later this should be saved to the database
-    localStorage.setItem('selectedStyle', selectedStyle);
-    navigate("/dashboard");
+
+    if (!user) {
+      // If no user, save to localStorage and redirect to auth
+      localStorage.setItem('selectedStyle', selectedStyle);
+      navigate("/auth");
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase
+        .from('user_styles')
+        .upsert({
+          user_id: user.id,
+          selected_style: selectedStyle,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Estilo selecionado!",
+        description: `Você escolheu o estilo ${styles.find(s => s.id === selectedStyle)?.name}`,
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error('Error saving style:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o estilo selecionado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   return <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -125,9 +210,10 @@ const StyleSelection = () => {
             <Button 
               onClick={handleContinue} 
               size="lg"
+              disabled={isLoading}
               className={`px-12 py-4 text-lg ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
             >
-              Profissionalizar fotos com o estilo escolhido
+              {isLoading ? "Salvando..." : "Profissionalizar fotos com o estilo escolhido"}
             </Button>
           </div>
         </div>
