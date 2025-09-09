@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, ArrowLeft, Check } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChefHat, Check, Camera, User, ShoppingCart, LogOut, ChevronDown } from "lucide-react";
 import { PricingPlans } from "@/components/PricingPlans";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -9,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Plans = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [availableCredits, setAvailableCredits] = useState(0);
   const [hasUsedCredits, setHasUsedCredits] = useState(false);
 
@@ -40,19 +42,59 @@ const Plans = () => {
     fetchCredits();
   }, [user]);
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
             <div className="flex items-center gap-2">
               <ChefHat className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold text-foreground">Fotos Profissionais</span>
             </div>
+            
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-sm">
+                <Camera className="h-3 w-3 mr-1" />
+                {availableCredits} fotos disponíveis
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
+                <User className="h-4 w-4 mr-2" />
+                Alterar estilo
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+                onClick={() => navigate("/plans")}
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Comprar mais fotos
+              </Button>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <span className="font-bold">{user?.user_metadata?.full_name || user?.email}</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
