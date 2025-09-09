@@ -49,6 +49,13 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [user, loading, navigate]);
+
+  // Redirect to Plans if user has 0 credits
+  useEffect(() => {
+    if (user && availablePhotos === 0) {
+      navigate("/plans");
+    }
+  }, [user, availablePhotos, navigate]);
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
