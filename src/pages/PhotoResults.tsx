@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, ChevronDown, User, ShoppingCart, LogOut, Package, Camera } from "lucide-react";
+import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, Package } from "lucide-react";
+import { DashboardHeader } from "@/components/DashboardHeader";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,7 +25,7 @@ interface TransformedPhoto {
 }
 
 const PhotoResults = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -84,10 +85,6 @@ const PhotoResults = () => {
     loadPhotoTransformations();
   }, [user, toast]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
 
   const handleFeedbackToggle = (photoId: string, imageVersion: number) => {
     const key = `${photoId}-${imageVersion}`;
@@ -112,25 +109,11 @@ const PhotoResults = () => {
   };
 
   const validateComment = (comment: string): boolean => {
-    const foodRelatedKeywords = [
-      'comida', 'alimento', 'prato', 'refeição', 'cardápio', 'menu', 
-      'restaurante', 'sabor', 'tempero', 'ingrediente', 'receita',
-      'food', 'meal', 'dish', 'restaurant', 'menu', 'recipe'
-    ];
-    
-    const inappropriateContent = [
-      'pornografia', 'sexual', 'violência', 'drogas', 'política'
-    ];
-    
+    const inappropriateContent = ['pornografia', 'pornographic', 'porn'];
     const lowerComment = comment.toLowerCase();
     
-    // Check for inappropriate content
-    if (inappropriateContent.some(word => lowerComment.includes(word))) {
-      return false;
-    }
-    
-    // Check for food-related content
-    return foodRelatedKeywords.some(word => lowerComment.includes(word)) || comment.length < 10;
+    // Only block pornographic content
+    return !inappropriateContent.some(word => lowerComment.includes(word));
   };
 
   const handleReprocessRequest = async (photoId: string, imageVersion: number) => {
@@ -140,7 +123,7 @@ const PhotoResults = () => {
     if (!validateComment(comment)) {
       toast({
         title: "Comentário inválido",
-        description: "O comentário deve estar relacionado à melhoria da foto do cardápio de restaurante.",
+        description: "O comentário contém conteúdo inadequado.",
         variant: "destructive"
       });
       return;
@@ -271,64 +254,7 @@ const PhotoResults = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-6">
-            <div className="flex items-center gap-2">
-              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-sm sm:text-xl font-bold text-foreground hidden sm:block">Fotos Profissionais</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden sm:flex items-center gap-2">
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm"
-                onClick={() => navigate("/plans")}
-              >
-                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden lg:inline">Comprar mais fotos</span>
-                <span className="lg:hidden">Comprar</span>
-              </Button>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-                  <span className="font-bold truncate max-w-[100px] sm:max-w-none">
-                    {user?.user_metadata?.full_name || user?.email}
-                  </span>
-                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Seleção de fotos
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/photo-results")}>
-                  <Eye className="h-4 w-4 mr-2" />
-                  Resultados
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/style-selection")}>
-                  <User className="h-4 w-4 mr-2" />
-                  Seleção de estilo
-                </DropdownMenuItem>
-                <DropdownMenuItem className="sm:hidden" onClick={() => navigate("/plans")}>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Comprar mais fotos
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader />
 
       <main className="container py-8">
         <div className="space-y-8">
@@ -431,26 +357,26 @@ const PhotoResults = () => {
                                      Baixar
                                    </Button>
                                    
-                                   {transformedImage.version < 3 && canReprocess && (
-                                     <Button 
-                                       variant="outline" 
-                                       size="sm"
-                                       onClick={() => handleFeedbackToggle(photo.id, transformedImage.version)}
-                                     >
-                                       <ThumbsDown className="h-4 w-4 mr-2" />
-                                       Não gostei
-                                     </Button>
-                                   )}
-                                 </div>
-                                 
-                                 {/* Version 3 limit message */}
-                                 {transformedImage.version >= 3 && (
-                                   <div className="mt-2 text-center">
-                                     <p className="text-sm text-muted-foreground">
-                                       Limite de reprocessamentos atingido para esta foto
-                                     </p>
-                                   </div>
-                                 )}
+                                    {transformedImage.version < 3 && canReprocess && (
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleFeedbackToggle(photo.id, transformedImage.version)}
+                                      >
+                                        <ThumbsDown className="h-4 w-4 mr-2" />
+                                        Não gostei
+                                      </Button>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Version 3 limit message */}
+                                  {transformedImage.version >= 3 && (
+                                    <div className="mt-2 text-center">
+                                      <p className="text-sm text-muted-foreground">
+                                        Limite de reprocessamentos atingido para esta foto
+                                      </p>
+                                    </div>
+                                  )}
                                </div>
                              </div>
 
@@ -519,13 +445,13 @@ const PhotoResults = () => {
       </main>
 
       {/* Image Preview Modal */}
-      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-        <DialogContent className="max-w-3xl">
+      <Dialog open={!!selectedPhoto} onOpenChange={(open) => setSelectedPhoto(open ? selectedPhoto : null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Visualização da Foto</DialogTitle>
           </DialogHeader>
           {selectedPhoto && (
-            <div className="flex justify-center">
+            <div className="flex justify-center overflow-auto">
               <img 
                 src={selectedPhoto} 
                 alt="Foto em tamanho maior"

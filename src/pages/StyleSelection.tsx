@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, ArrowLeft, Check } from "lucide-react";
+import { ChefHat, ArrowLeft } from "lucide-react";
+import { DashboardHeader } from "@/components/DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -153,20 +154,7 @@ const StyleSelection = () => {
     }
   };
   return <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-6">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="text-xs sm:text-sm">
-              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Voltar</span>
-            </Button>
-            <div className="flex items-center gap-2">
-              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-sm sm:text-xl font-bold text-foreground hidden sm:block">Fotos Profissionais</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader />
 
       <main className="container py-8">
         <div className="max-w-6xl mx-auto space-y-8">
