@@ -108,7 +108,7 @@ export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) =>
                 </div>
               </div>
             </div>
-            <CardTitle className="text-2xl">Transformando suas fotos</CardTitle>
+            <CardTitle className="text-2xl">Profissionalizando as suas fotos</CardTitle>
             <CardDescription>
               Nossa IA está processando suas fotos para criar versões profissionais. 
               Aguarde enquanto trabalhamos na melhoria da iluminação, cores e composição.

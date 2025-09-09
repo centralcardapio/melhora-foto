@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, ChevronDown, User, ShoppingCart, LogOut, Package } from "lucide-react";
+import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, ChevronDown, User, ShoppingCart, LogOut, Package, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -220,11 +220,42 @@ const PhotoResults = () => {
   };
 
   const handleDownloadAll = async () => {
-    // In a real implementation, this would create a ZIP file
-    toast({
-      title: "Download iniciado",
-      description: "Suas fotos profissionais estão sendo preparadas para download."
-    });
+    if (photos.length === 0) return;
+    
+    try {
+      // Get the latest version of each photo
+      const latestPhotos = photos.map(photo => {
+        const latestImage = photo.transformedImages[photo.transformedImages.length - 1];
+        return {
+          url: latestImage.url,
+          name: `${photo.originalName}_profissional_v${latestImage.version}.jpg`
+        };
+      });
+
+      // Download each photo individually (in a real implementation, you'd create a ZIP)
+      for (const photo of latestPhotos) {
+        const link = document.createElement('a');
+        link.href = photo.url;
+        link.download = photo.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Add small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      toast({
+        title: "Download concluído",
+        description: `${latestPhotos.length} fotos profissionais foram baixadas.`
+      });
+    } catch (error) {
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível baixar todas as fotos. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
@@ -252,10 +283,6 @@ const PhotoResults = () => {
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
-                <User className="h-4 w-4 mr-2" />
-                Alterar estilo
-              </Button>
               <Button 
                 variant="default" 
                 size="sm" 
@@ -274,6 +301,18 @@ const PhotoResults = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Seleção de fotos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/photo-results")}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Resultados
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/style-selection")}>
+                  <User className="h-4 w-4 mr-2" />
+                  Seleção de estilo
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sair
@@ -289,7 +328,7 @@ const PhotoResults = () => {
           {/* Page Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Suas Fotos Transformadas</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Suas Fotos Profissionais</h1>
               <p className="text-muted-foreground">Compare e baixe suas fotos profissionais</p>
             </div>
             
@@ -341,71 +380,83 @@ const PhotoResults = () => {
                               )}
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {/* Original Photo */}
-                              <div>
-                                <h4 className="font-medium mb-2 text-center">Foto Original</h4>
-                                <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={photo.originalUrl} 
-                                    alt="Foto original"
-                                    className="w-full h-48 object-cover rounded-lg"
-                                    onClick={() => setSelectedPhoto(photo.originalUrl)}
-                                  />
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                    <Eye className="h-8 w-8 text-white" />
-                                  </div>
-                                </div>
-                              </div>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               {/* Original Photo */}
+                               <div>
+                                 <h4 className="font-medium mb-2 text-center">Foto Original</h4>
+                                 <div className="relative group cursor-pointer">
+                                   <img 
+                                     src={photo.originalUrl} 
+                                     alt="Foto original"
+                                     className="w-full h-80 object-cover rounded-lg"
+                                     onClick={() => setSelectedPhoto(photo.originalUrl)}
+                                   />
+                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                     <Eye className="h-8 w-8 text-white" />
+                                   </div>
+                                 </div>
+                               </div>
 
-                              {/* Transformed Photo */}
-                              <div>
-                                <h4 className="font-medium mb-2 text-center">Foto Profissional</h4>
-                                <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={transformedImage.url} 
-                                    alt="Foto transformada"
-                                    className="w-full h-48 object-cover rounded-lg"
-                                    onClick={() => setSelectedPhoto(transformedImage.url)}
-                                  />
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                    <Eye className="h-8 w-8 text-white" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                               {/* Transformed Photo */}
+                               <div>
+                                 <h4 className="font-medium mb-2 text-center">Foto Profissional</h4>
+                                 <div className="relative group cursor-pointer">
+                                   <img 
+                                     src={transformedImage.url} 
+                                     alt="Foto transformada"
+                                     className="w-full h-80 object-cover rounded-lg"
+                                     onClick={() => setSelectedPhoto(transformedImage.url)}
+                                   />
+                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                     <Eye className="h-8 w-8 text-white" />
+                                   </div>
+                                 </div>
+                                 
+                                 {/* Action Buttons - Right aligned below transformed photo */}
+                                 <div className="flex items-center justify-end gap-2 mt-4">
+                                   <Button 
+                                     variant="outline" 
+                                     size="sm"
+                                     onClick={() => handleDownloadSingle(transformedImage.url, photo.originalName)}
+                                   >
+                                     <Download className="h-4 w-4 mr-2" />
+                                     Baixar
+                                   </Button>
+                                   
+                                   {transformedImage.version < 3 && canReprocess && (
+                                     <Button 
+                                       variant="outline" 
+                                       size="sm"
+                                       onClick={() => handleFeedbackToggle(photo.id, transformedImage.version)}
+                                     >
+                                       <ThumbsDown className="h-4 w-4 mr-2" />
+                                       Não gostei
+                                     </Button>
+                                   )}
+                                 </div>
+                                 
+                                 {/* Version 3 limit message */}
+                                 {transformedImage.version >= 3 && (
+                                   <div className="mt-2 text-center">
+                                     <p className="text-sm text-muted-foreground">
+                                       Limite de reprocessamentos atingido para esta foto
+                                     </p>
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex items-center justify-between mt-4">
-                              <div className="flex items-center gap-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => handleDownloadSingle(transformedImage.url, photo.originalName)}
-                                >
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Baixar
-                                </Button>
-                                
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => handleFeedbackToggle(photo.id, transformedImage.version)}
-                                >
-                                  <ThumbsDown className="h-4 w-4 mr-2" />
-                                  Não gostei
-                                </Button>
-                              </div>
-                              
-                              {canReprocess && transformedImage.version === photo.transformedImages.length && (
-                                <Badge variant="outline" className="text-xs">
-                                  Reprocessamentos restantes: {2 - photo.reprocessingCount}
-                                </Badge>
-                              )}
-                            </div>
+                             {/* Remaining reprocessings badge */}
+                             {canReprocess && transformedImage.version === photo.transformedImages.length && transformedImage.version < 3 && (
+                               <div className="flex justify-end mt-2">
+                                 <Badge variant="outline" className="text-xs">
+                                   Reprocessamentos restantes: {2 - photo.reprocessingCount}
+                                 </Badge>
+                               </div>
+                             )}
 
-                            {/* Feedback Form */}
-                            {feedbackState?.showFeedback && (
+                             {/* Feedback Form */}
+                             {feedbackState?.showFeedback && transformedImage.version < 3 && (
                               <div className="mt-4 p-4 bg-muted rounded-lg">
                                 <h5 className="font-medium mb-2">O que não gostou nesta foto?</h5>
                                 <p className="text-sm text-muted-foreground mb-3">

@@ -124,16 +124,26 @@ export const PhotoUpload = ({
         }
       }
 
-      // Decrease user photo credits
-      const { error: creditError } = await supabase
+      // Decrease user photo credits by the number of photos being processed
+      const { data: currentCredits, error: fetchError } = await supabase
         .from('photo_credits')
-        .update({
-          total_used: photos.length
-        })
-        .eq('user_id', user.id);
+        .select('total_used')
+        .eq('user_id', user.id)
+        .single();
 
-      if (creditError) {
-        console.error('Error updating photo credits:', creditError);
+      if (fetchError) {
+        console.error('Error fetching current credits:', fetchError);
+      } else {
+        const { error: creditError } = await supabase
+          .from('photo_credits')
+          .update({
+            total_used: (currentCredits?.total_used || 0) + photos.length
+          })
+          .eq('user_id', user.id);
+
+        if (creditError) {
+          console.error('Error updating photo credits:', creditError);
+        }
       }
 
       // Start processing

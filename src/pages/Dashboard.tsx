@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChefHat, Camera, User, ShoppingCart, LogOut, ChevronDown } from "lucide-react";
+import { ChefHat, Camera, User, ShoppingCart, LogOut, ChevronDown, Eye } from "lucide-react";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { PricingPlans } from "@/components/PricingPlans";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,10 +90,6 @@ const Dashboard = () => {
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => navigate("/style-selection")}>
-                <User className="h-4 w-4 mr-2" />
-                Alterar estilo
-              </Button>
               <Button 
                 variant="default" 
                 size="sm" 
@@ -112,6 +108,18 @@ const Dashboard = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                  <Camera className="h-4 w-4 mr-2" />
+                  Seleção de fotos
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/photo-results")}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Resultados
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/style-selection")}>
+                  <User className="h-4 w-4 mr-2" />
+                  Seleção de estilo
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sair
