@@ -120,7 +120,7 @@ const Plans = () => {
                         variant="default" 
                         size="lg"
                         className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate("/style-selection")}
                       >
                         Experimentar 2 fotos profissionais gratuitas
                       </Button>
