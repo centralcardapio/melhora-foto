@@ -23,8 +23,8 @@ export const Hero = () => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="text-lg py-6 px-[109px] mx-[76px]" onClick={() => {
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="lg" className="text-lg py-6 px-8 sm:px-16 w-full sm:w-auto" onClick={() => {
               const pricingSection = document.getElementById('precos');
               pricingSection?.scrollIntoView({
                 behavior: 'smooth'
@@ -33,22 +33,20 @@ export const Hero = () => {
                 <Camera className="h-5 w-5 mr-2" />
                 Transformar Fotos Agora
               </Button>
-              
-              
             </div>
 
-            <div className="flex items-center justify-center gap-8 pt-4">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">+35%</div>
-                <div className="text-sm text-muted-foreground">Aumento médio em vendas</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 pt-4 text-center">
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary">+35%</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Aumento médio em vendas</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">&gt;20x</div>
-                <div className="text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary">&gt;20x</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Mais barato que fotógrafo profissional</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">&lt;1h</div>
-                <div className="text-sm text-muted-foreground">Pronto no mesmo dia</div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary">&lt;1h</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Pronto no mesmo dia</div>
               </div>
             </div>
           </div>

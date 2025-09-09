@@ -13,11 +13,12 @@ export const Header = () => {
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <ChefHat className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-foreground">Fotos Profissionais</span>
+          <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+          <span className="text-sm sm:text-xl font-bold text-foreground hidden xs:block">Fotos Profissionais</span>
+          <span className="text-sm font-bold text-foreground block xs:hidden">FP</span>
         </div>
         
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-6">
           <a 
             href="#antes-depois" 
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -64,11 +65,11 @@ export const Header = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 text-xs sm:text-sm"
           onClick={handleLoginClick}
         >
-          <LogIn className="h-4 w-4" />
-          Entrar
+          <LogIn className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Entrar</span>
         </Button>
       </div>
     </header>

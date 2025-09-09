@@ -155,14 +155,14 @@ const StyleSelection = () => {
   return <div className="min-h-screen bg-background">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+          <div className="flex items-center gap-2 sm:gap-6">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="text-xs sm:text-sm">
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Voltar</span>
             </Button>
             <div className="flex items-center gap-2">
-              <ChefHat className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">Fotos Profissionais</span>
+              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <span className="text-sm sm:text-xl font-bold text-foreground hidden sm:block">Fotos Profissionais</span>
             </div>
           </div>
         </div>
@@ -171,12 +171,10 @@ const StyleSelection = () => {
       <main className="container py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight">Escolha o estilo que melhor representa o seu restaurante</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Escolha o estilo que melhor representa o seu restaurante</h1>
             <div className="max-w-6xl mx-auto">
-              <p className="text-muted-foreground mb-4">
-            </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                <p className="text-base text-blue-800 dark:text-blue-200">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6">
+                <p className="text-sm sm:text-base text-blue-800 dark:text-blue-200">
                   <strong>💡 Dica importante:</strong> A seleção adequada do estilo conforme o perfil do seu restaurante é essencial para otimizar suas fotos de acordo com o perfil dos seus clientes e maximizar a conversão de vendas.
                 </p>
               </div>
@@ -197,13 +195,14 @@ const StyleSelection = () => {
               </Card>)}
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center px-4">
             <Button 
               onClick={handleContinue} 
               size="lg"
-              className={`px-12 py-4 text-lg ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
+              className={`px-6 sm:px-12 py-4 text-sm sm:text-lg w-full sm:w-auto ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
             >
-              Profissionalizar fotos com o estilo escolhido
+              <span className="hidden sm:inline">Profissionalizar fotos com o estilo escolhido</span>
+              <span className="sm:hidden">Continuar com estilo escolhido</span>
             </Button>
           </div>
         </div>

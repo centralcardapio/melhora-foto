@@ -274,30 +274,33 @@ const PhotoResults = () => {
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-6">
             <div className="flex items-center gap-2">
-              <ChefHat className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">Fotos Profissionais</span>
+              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <span className="text-sm sm:text-xl font-bold text-foreground hidden sm:block">Fotos Profissionais</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-2">
               <Button 
                 variant="default" 
                 size="sm" 
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm"
                 onClick={() => navigate("/plans")}
               >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Comprar mais fotos
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden lg:inline">Comprar mais fotos</span>
+                <span className="lg:hidden">Comprar</span>
               </Button>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <span className="font-bold">{user?.user_metadata?.full_name || user?.email}</span>
-                  <ChevronDown className="h-4 w-4" />
+                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                  <span className="font-bold truncate max-w-[100px] sm:max-w-none">
+                    {user?.user_metadata?.full_name || user?.email}
+                  </span>
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -313,6 +316,10 @@ const PhotoResults = () => {
                   <User className="h-4 w-4 mr-2" />
                   Seleção de estilo
                 </DropdownMenuItem>
+                <DropdownMenuItem className="sm:hidden" onClick={() => navigate("/plans")}>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Comprar mais fotos
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sair
@@ -326,16 +333,17 @@ const PhotoResults = () => {
       <main className="container py-8">
         <div className="space-y-8">
           {/* Page Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Suas Fotos Profissionais</h1>
-              <p className="text-muted-foreground">Compare e baixe suas fotos profissionais</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Suas Fotos Profissionais</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">Compare e baixe suas fotos profissionais</p>
             </div>
             
             {photos.length > 0 && (
-              <Button onClick={handleDownloadAll} size="lg" className="bg-green-600 hover:bg-green-700">
+              <Button onClick={handleDownloadAll} size="sm" className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
                 <Package className="h-4 w-4 mr-2" />
-                Baixar Todas (ZIP)
+                <span className="hidden sm:inline">Baixar Todas (ZIP)</span>
+                <span className="sm:hidden">Baixar Todas</span>
               </Button>
             )}
           </div>

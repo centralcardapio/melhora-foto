@@ -46,7 +46,7 @@ export const Pricing = () => {
           </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto items-stretch">
           {plans.map((plan, index) => <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col`}>
               {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <Badge className="bg-primary text-primary-foreground px-4 py-1">
