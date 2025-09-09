@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central do Cardápio - Confirmação de E-mail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f8fafc;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            color: #fff3e6;
+            font-size: 16px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .benefits {
+            background-color: #f7fafc;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .benefit-icon {
+            color: #ff6b35;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        .footer {
+            background-color: #1a1a1a;
+            color: #a0a0a0;
+            padding: 30px;
+            text-align: center;
+        }
+        .contact-info {
+            margin-bottom: 20px;
+        }
+        .contact-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .copyright {
+            font-size: 12px;
+            color: #666666;
+            margin-top: 20px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🍽️ Central do Cardápio</div>
+            <div class="tagline">Transforme suas fotos de pratos com IA</div>
+        </div>
+        
+        <div class="content">
+            <h1 class="greeting">Olá! Confirme seu e-mail para começar</h1>
+            
+            <p class="message">
+                Estamos muito felizes em ter você na Central do Cardápio! Para garantir a segurança da sua conta e liberar seus <strong>2 créditos gratuitos</strong>, precisamos confirmar seu endereço de e-mail.
+            </p>
+            
+            <div style="text-align: center;">
+                <a href="{{CONFIRMATION_LINK}}" class="cta-button">
+                    ✅ Confirmar E-mail e Testar 2 Créditos Gratuitos
+                </a>
+            </div>
+            
+            <div class="benefits">
+                <div class="benefit-item">
+                    <span class="benefit-icon">📈</span>
+                    <span>Aumente suas vendas no delivery com fotos mais atrativas</span>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">💰</span>
+                    <span>Mais barato que contratar um fotógrafo profissional</span>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon">⚡</span>
+                    <span>Resultados em segundos, não em dias</span>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p style="font-size: 14px; color: #718096; text-align: center;">
+                Se você não criou uma conta, pode ignorar este e-mail com segurança.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <div class="contact-info">
+                <div class="contact-item">📧 contato@centraldocardapio.com</div>
+                <div class="contact-item">📱 WhatsApp: (11) 99999-9999</div>
+                <div class="contact-item">🌐 www.centraldocardapio.com</div>
+            </div>
+            
+            <div class="copyright">
+                © 2024 Central do Cardápio. Todos os direitos reservados.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

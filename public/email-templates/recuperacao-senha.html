@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central do Cardápio - Recuperação de Senha</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f8fafc;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            color: #fff3e6;
+            font-size: 16px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .icon-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .security-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+        .security-notice {
+            background-color: #fef8e7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .security-notice-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .security-notice-text {
+            color: #a16207;
+            font-size: 14px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .expiry-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .expiry-title {
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 8px;
+        }
+        .expiry-text {
+            color: #0284c7;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #1a1a1a;
+            color: #a0a0a0;
+            padding: 30px;
+            text-align: center;
+        }
+        .contact-info {
+            margin-bottom: 20px;
+        }
+        .contact-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .copyright {
+            font-size: 12px;
+            color: #666666;
+            margin-top: 20px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 30px 0;
+        }
+        .alternative-text {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🍽️ Central do Cardápio</div>
+            <div class="tagline">Transforme suas fotos de pratos com IA</div>
+        </div>
+        
+        <div class="content">
+            <div class="icon-section">
+                <div class="security-icon">🔐</div>
+                <h1 class="title">Redefinir sua senha</h1>
+            </div>
+            
+            <p class="message">
+                Olá! Recebemos uma solicitação para redefinir a senha da sua conta na Central do Cardápio. Se você fez esta solicitação, clique no botão abaixo para criar uma nova senha.
+            </p>
+            
+            <div class="button-container">
+                <a href="{{RESET_LINK}}" class="cta-button">
+                    🔑 Redefinir Minha Senha
+                </a>
+            </div>
+            
+            <div class="expiry-info">
+                <div class="expiry-title">⏰ Link temporário</div>
+                <div class="expiry-text">
+                    Este link é válido por 60 minutos por motivos de segurança.
+                </div>
+            </div>
+            
+            <div class="alternative-text">
+                <p>Se o botão não funcionar, copie e cole este link no seu navegador:</p>
+                <p style="word-break: break-all; margin-top: 10px; color: #ff6b35; font-weight: 500;">
+                    {{RESET_LINK}}
+                </p>
+            </div>
+            
+            <div class="security-notice">
+                <div class="security-notice-title">
+                    ⚠️ Importante para sua segurança
+                </div>
+                <div class="security-notice-text">
+                    Se você não solicitou esta redefinição de senha, pode ignorar este e-mail com segurança. Sua conta permanecerá protegida e nenhuma alteração será feita.
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p style="font-size: 14px; color: #718096; text-align: center;">
+                Precisa de ajuda? Nossa equipe de suporte está sempre disponível para te ajudar.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <div class="contact-info">
+                <div class="contact-item">📧 contato@centraldocardapio.com</div>
+                <div class="contact-item">📱 WhatsApp: (11) 99999-9999</div>
+                <div class="contact-item">🌐 www.centraldocardapio.com</div>
+            </div>
+            
+            <div class="copyright">
+                © 2024 Central do Cardápio. Todos os direitos reservados.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
