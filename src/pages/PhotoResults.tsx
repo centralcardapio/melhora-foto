@@ -319,12 +319,16 @@ const PhotoResults = () => {
                                <div>
                                  <h4 className="font-medium mb-2 text-center">Foto Original</h4>
                                  <div className="relative group cursor-pointer">
-                                   <img 
-                                     src={photo.originalUrl} 
-                                     alt="Foto original"
-                                     className="w-full h-80 object-cover rounded-lg"
-                                     onClick={() => setSelectedPhoto(photo.originalUrl)}
-                                   />
+                                    <img 
+                                      src={photo.originalUrl} 
+                                      alt="Foto original"
+                                      className="w-full h-80 object-cover rounded-lg"
+                                      onClick={() => setSelectedPhoto(photo.originalUrl)}
+                                      onError={(e) => {
+                                        console.error('Error loading original image:', photo.originalUrl);
+                                        e.currentTarget.src = '/placeholder.svg';
+                                      }}
+                                    />
                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                      <Eye className="h-8 w-8 text-white" />
                                    </div>
@@ -335,12 +339,16 @@ const PhotoResults = () => {
                                <div>
                                  <h4 className="font-medium mb-2 text-center">Foto Profissional</h4>
                                  <div className="relative group cursor-pointer">
-                                   <img 
-                                     src={transformedImage.url} 
-                                     alt="Foto transformada"
-                                     className="w-full h-80 object-cover rounded-lg"
-                                     onClick={() => setSelectedPhoto(transformedImage.url)}
-                                   />
+                                    <img 
+                                      src={transformedImage.url} 
+                                      alt="Foto transformada"
+                                      className="w-full h-80 object-cover rounded-lg"
+                                      onClick={() => setSelectedPhoto(transformedImage.url)}
+                                      onError={(e) => {
+                                        console.error('Error loading transformed image:', transformedImage.url);
+                                        e.currentTarget.src = '/placeholder.svg';
+                                      }}
+                                    />
                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                      <Eye className="h-8 w-8 text-white" />
                                    </div>
@@ -445,17 +453,21 @@ const PhotoResults = () => {
       </main>
 
       {/* Image Preview Modal */}
-      <Dialog open={!!selectedPhoto} onOpenChange={(open) => setSelectedPhoto(open ? selectedPhoto : null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle>Visualização da Foto</DialogTitle>
+      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-2">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-center">Visualização da Foto</DialogTitle>
           </DialogHeader>
           {selectedPhoto && (
-            <div className="flex justify-center overflow-auto">
+            <div className="flex justify-center items-center min-h-[60vh]">
               <img 
                 src={selectedPhoto} 
                 alt="Foto em tamanho maior"
-                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                className="max-w-full max-h-[75vh] object-contain rounded-lg"
+                onError={(e) => {
+                  console.error('Error loading image:', selectedPhoto);
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
               />
             </div>
           )}

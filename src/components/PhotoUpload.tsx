@@ -80,22 +80,57 @@ export const PhotoUpload = ({
     });
   };
 
+  const uploadFileToStorage = async (file: File, fileName: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user!.id}/${Date.now()}-${fileName}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('photos')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from('photos')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
+  };
+
   const handleTransformPhotos = async () => {
     if (!user) return;
     
     // Prepare photos to process
-    const photos = [
-      ...uploadedFiles.map(file => ({
-        name: file.name,
-        url: URL.createObjectURL(file),
-        file
-      })),
-      ...Array.from(selectedPhotos).map(index => ({
+    const photos = [];
+    
+    // Upload new files to storage
+    for (const file of uploadedFiles) {
+      const publicUrl = await uploadFileToStorage(file, file.name);
+      if (publicUrl) {
+        photos.push({
+          name: file.name,
+          url: publicUrl,
+          file
+        });
+      }
+    }
+    
+    // Add imported photos (these are already URLs)
+    Array.from(selectedPhotos).forEach(index => {
+      photos.push({
         name: `Foto importada ${index + 1}`,
         url: importedPhotos[index],
         file: null
-      }))
-    ];
+      });
+    });
 
     if (photos.length === 0) return;
 
