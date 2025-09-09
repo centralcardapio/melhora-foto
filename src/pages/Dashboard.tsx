@@ -131,7 +131,10 @@ const Dashboard = () => {
 
           {availablePhotos > 0 ? (
             // User has credits - show photo upload/selection
-            <PhotoUpload availablePhotos={availablePhotos} />
+            <PhotoUpload 
+              availablePhotos={availablePhotos} 
+              onProcessingComplete={() => navigate("/photo-results")}
+            />
           ) : (
             // User has no credits - show pricing plans
             <Card>
