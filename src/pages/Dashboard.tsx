@@ -16,7 +16,7 @@ const Dashboard = () => {
     loading
   } = useAuth();
   const navigate = useNavigate();
-  const [availablePhotos, setAvailablePhotos] = useState(0);
+  const [availablePhotos, setAvailablePhotos] = useState<number | null>(null);
 
   // Fetch photo credits from database
   useEffect(() => {
@@ -50,7 +50,7 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
 
-  // Redirect to Plans if user has 0 credits
+  // Redirect to Plans if user has 0 credits (only after credits are loaded)
   useEffect(() => {
     if (user && availablePhotos === 0) {
       navigate("/plans");
@@ -83,7 +83,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <Badge variant="secondary" className="text-sm">
                 <Camera className="h-3 w-3 mr-1" />
-                {availablePhotos} fotos disponíveis
+                {availablePhotos ?? 0} fotos disponíveis
               </Badge>
             </div>
           </div>
@@ -129,13 +129,13 @@ const Dashboard = () => {
             <p className="text-muted-foreground">Bem-vindo à criação das fotos profissionais do seu cardápio</p>
           </div>
 
-          {availablePhotos > 0 ? (
+          {availablePhotos !== null && availablePhotos > 0 ? (
             // User has credits - show photo upload/selection
             <PhotoUpload 
-              availablePhotos={availablePhotos} 
+              availablePhotos={availablePhotos ?? 0} 
               onProcessingComplete={() => navigate("/photo-results")}
             />
-          ) : (
+          ) : availablePhotos === 0 ? (
             // User has no credits - show pricing plans
             <Card>
               <CardHeader>
@@ -148,6 +148,12 @@ const Dashboard = () => {
                 <PricingPlans />
               </CardContent>
             </Card>
+          ) : (
+            // Loading credits
+            <div className="text-center py-8">
+              <ChefHat className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
+              <p className="text-muted-foreground">Carregando créditos...</p>
+            </div>
           )}
         </div>
       </main>
