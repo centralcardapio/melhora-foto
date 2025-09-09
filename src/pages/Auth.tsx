@@ -43,30 +43,24 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
-  const { signUp, signIn, signInWithGoogle, user, hasSelectedStyle, loading } = useAuth();
+  const { signUp, signIn, signInWithGoogle, user, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Auth page useEffect - user:', !!user, 'hasSelectedStyle:', hasSelectedStyle, 'loading:', loading);
+    console.log('Auth page useEffect - user:', !!user, 'loading:', loading);
     
     if (!loading && user) {
-      // User is authenticated, check if they have selected a style
-      if (hasSelectedStyle === true) {
-        console.log('Redirecting to dashboard');
-        navigate("/dashboard");
-      } else if (hasSelectedStyle === false) {
-        console.log('Redirecting to style selection');
-        navigate("/style-selection");
-      }
-      // If hasSelectedStyle is null, we're still checking
+      // User is authenticated, redirect to dashboard
+      console.log('Redirecting to dashboard');
+      navigate("/dashboard");
     }
     
     // Check if URL indicates login mode
     if (searchParams.get("mode") === "login") {
       setIsLogin(true);
     }
-  }, [user, navigate, searchParams, hasSelectedStyle, loading]);
+  }, [user, navigate, searchParams, loading]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();

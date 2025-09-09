@@ -5,22 +5,17 @@ import { ChefHat } from "lucide-react";
 
 const AuthRedirect = () => {
   const navigate = useNavigate();
-  const { user, loading, hasSelectedStyle } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && user) {
-      // User is authenticated, check if they have selected a style
-      if (hasSelectedStyle === true) {
-        navigate("/dashboard", { replace: true });
-      } else if (hasSelectedStyle === false) {
-        navigate("/style-selection", { replace: true });
-      }
-      // If hasSelectedStyle is null, we're still checking
+      // User is authenticated, redirect to dashboard
+      navigate("/dashboard", { replace: true });
     } else if (!loading && !user) {
       // User is not authenticated
       navigate("/", { replace: true });
     }
-  }, [user, loading, hasSelectedStyle, navigate]);
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
