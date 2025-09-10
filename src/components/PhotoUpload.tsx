@@ -52,7 +52,16 @@ export const PhotoUpload = ({
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.bmp']
     },
-    maxFiles: availablePhotos - uploadedFiles.length
+    maxFiles: availablePhotos - uploadedFiles.length,
+    onDropRejected: (rejectedFiles) => {
+      if (rejectedFiles.length > 0) {
+        toast({
+          title: "Formato de arquivo não aceito",
+          description: "Por favor, envie apenas imagens nos formatos: JPG, JPEG, PNG, WebP ou BMP.",
+          variant: "destructive"
+        });
+      }
+    }
   });
 
   const removeFile = (index: number) => {

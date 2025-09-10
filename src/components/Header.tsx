@@ -1,14 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { ChefHat, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 export const Header = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
   const handleLoginClick = () => {
-    navigate("/auth?mode=login");
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      navigate("/auth?mode=login");
+    }
+  };
+
+  const handleLogoClick = () => {
+    if (user) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
   };
   return <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={handleLogoClick}>
           <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
           <span className="text-sm sm:text-xl font-bold text-foreground hidden xs:block">Fotos Profissionais</span>
           <span className="text-sm font-bold text-foreground block xs:hidden">Fotos Profissionais</span>
