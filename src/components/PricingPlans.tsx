@@ -9,25 +9,25 @@ const plans = [
   {
     name: "Degustação",
     photos: 10,
-    price: 49,
+    price: 99,
     description: "Ideal para testar nossa tecnologia",
     features: ["<strong>10 fotos profissionais</strong>", "Download individual", "Download em lote", "Suporte via e-mail"],
     popular: false
   },
   {
     name: "Chef",
-    photos: 30,
-    price: 99,
+    photos: 20,
+    price: 149,
     description: "Perfeito para cardápios médios",
-    features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
+    features: ["<strong>20 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
     popular: true
   },
   {
     name: "Reserva",
-    photos: 50,
-    price: 149,
+    photos: 30,
+    price: 199,
     description: "Para cardápios completos",
-    features: ["<strong>50 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
+    features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
     popular: false
   }
 ];
