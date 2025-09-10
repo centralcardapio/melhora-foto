@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChefHat, Camera, User, ShoppingCart, LogOut, ChevronDown, Eye } from "lucide-react";
+import { ChefHat, Camera, User, ShoppingCart, LogOut, ChevronDown, Eye, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const DashboardHeader = () => {
@@ -96,6 +96,10 @@ export const DashboardHeader = () => {
               <DropdownMenuItem onClick={() => navigate("/style-selection")}>
                 <User className="h-4 w-4 mr-2" />
                 Seleção de estilo
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/credit-statement")}>
+                <FileText className="h-4 w-4 mr-2" />
+                Extrato de créditos
               </DropdownMenuItem>
               <DropdownMenuItem className="sm:hidden" onClick={() => navigate("/plans")}>
                 <ShoppingCart className="h-4 w-4 mr-2" />

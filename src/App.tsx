@@ -13,6 +13,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ResetPassword from "./pages/ResetPassword";
 import AuthRedirect from "./pages/AuthRedirect";
 import NotFound from "./pages/NotFound";
+import CreditStatement from "./pages/CreditStatement";
 import PhotoResults from "./pages/PhotoResults";
 import CookieConsent from "@/components/CookieConsent";
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/style-selection" element={<StyleSelection />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/photo-results" element={<PhotoResults />} />
+            <Route path="/credit-statement" element={<CreditStatement />} />
             <Route path="/auth-redirect" element={<AuthRedirect />} />
             <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
             <Route path="/reset-password" element={<ResetPassword />} />

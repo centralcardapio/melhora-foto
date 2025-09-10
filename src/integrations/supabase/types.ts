@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_purchases: {
+        Row: {
+          amount: number
+          available_amount: number
+          created_at: string
+          expiration_date: string
+          id: string
+          order_reference: string | null
+          purchase_date: string
+          purchase_type: string
+          updated_at: string
+          used_amount: number
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          available_amount: number
+          created_at?: string
+          expiration_date: string
+          id?: string
+          order_reference?: string | null
+          purchase_date?: string
+          purchase_type?: string
+          updated_at?: string
+          used_amount?: number
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          available_amount?: number
+          created_at?: string
+          expiration_date?: string
+          id?: string
+          order_reference?: string | null
+          purchase_date?: string
+          purchase_type?: string
+          updated_at?: string
+          used_amount?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_usage_history: {
+        Row: {
+          amount_used: number
+          credit_purchase_id: string
+          description: string
+          id: string
+          photo_transformation_id: string | null
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_used: number
+          credit_purchase_id: string
+          description: string
+          id?: string
+          photo_transformation_id?: string | null
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_used?: number
+          credit_purchase_id?: string
+          description?: string
+          id?: string
+          photo_transformation_id?: string | null
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_usage_history_credit_purchase_id_fkey"
+            columns: ["credit_purchase_id"]
+            isOneToOne: false
+            referencedRelation: "credit_purchases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_usage_history_photo_transformation_id_fkey"
+            columns: ["photo_transformation_id"]
+            isOneToOne: false
+            referencedRelation: "photo_transformations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photo_credits: {
         Row: {
           available: number
@@ -115,6 +202,19 @@ export type Database = {
       create_initial_credits: {
         Args: { user_id_param: string }
         Returns: undefined
+      }
+      get_user_available_credits: {
+        Args: { user_id_param: string }
+        Returns: number
+      }
+      use_credits: {
+        Args: {
+          credits_to_use: number
+          description_param: string
+          photo_transformation_id_param?: string
+          user_id_param: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
