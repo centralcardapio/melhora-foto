@@ -22,19 +22,27 @@ const Plans = () => {
       if (!user) return;
       
       try {
-        const { data, error } = await supabase
-          .from('photo_credits')
-          .select('available, total_used')
-          .eq('user_id', user.id)
-          .single();
+        const { data: availableData, error: availableError } = await supabase.rpc('get_user_available_credits', {
+          user_id_param: user.id
+        });
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching credits:', error);
+        if (availableError) {
+          console.error('Error fetching available credits:', availableError);
           return;
         }
 
-        setAvailableCredits(data?.available || 0);
-        setHasUsedCredits((data?.total_used || 0) > 0);
+        const { data: usageData, error: usageError } = await supabase
+          .from('credit_usage_history')
+          .select('amount_used')
+          .eq('user_id', user.id)
+          .limit(1);
+
+        if (usageError && usageError.code !== 'PGRST116') {
+          console.error('Error fetching usage history:', usageError);
+        }
+
+        setAvailableCredits(availableData || 0);
+        setHasUsedCredits(usageData && usageData.length > 0);
       } catch (error) {
         console.error('Error fetching credits:', error);
       }
@@ -104,19 +112,6 @@ const Plans = () => {
                     </div>
                   </div>
 
-                  {/* Show free trial button if user hasn't used their initial credits */}
-                  {user && availableCredits > 0 && !hasUsedCredits && (
-                    <div className="pt-4 border-t">
-                      <Button 
-                        variant="default" 
-                        size="lg"
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                        onClick={() => navigate("/style-selection")}
-                      >
-                        Experimentar 2 fotos profissionais gratuitas
-                      </Button>
-                    </div>
-                  )}
 
                   <div className="pt-4 border-t">
                     <p className="text-xs text-muted-foreground text-center">
