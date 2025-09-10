@@ -125,6 +125,16 @@ export const PhotoUpload = ({
   const handleTransformPhotos = async () => {
     if (!user || isStartingProcess) return;
     
+    // Check if user has enough credits before starting
+    if (availablePhotos === 0 || (uploadedFiles.length + selectedPhotos.size) > availablePhotos) {
+      toast({
+        title: "Créditos insuficientes",
+        description: "Você não tem créditos suficientes para processar essas fotos.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsStartingProcess(true);
     
     // Prepare photos to process

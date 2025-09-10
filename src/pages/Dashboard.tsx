@@ -15,30 +15,28 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [availablePhotos, setAvailablePhotos] = useState<number | null>(null);
 
-  // Fetch photo credits from database
+  // Fetch available credits using the new system
   useEffect(() => {
-    const fetchPhotoCredits = async () => {
+    const fetchAvailableCredits = async () => {
       if (user) {
         try {
-          const { data, error } = await supabase
-            .from('photo_credits')
-            .select('available')
-            .eq('user_id', user.id)
-            .single();
+          const { data, error } = await supabase.rpc('get_user_available_credits', {
+            user_id_param: user.id
+          });
 
-          if (error && error.code !== 'PGRST116') {
-            console.error('Error fetching photo credits:', error);
+          if (error) {
+            console.error('Error fetching available credits:', error);
             return;
           }
 
-          setAvailablePhotos(data?.available || 0);
+          setAvailablePhotos(data || 0);
         } catch (error) {
-          console.error('Error fetching photo credits:', error);
+          console.error('Error fetching available credits:', error);
         }
       }
     };
 
-    fetchPhotoCredits();
+    fetchAvailableCredits();
   }, [user]);
 
   useEffect(() => {
