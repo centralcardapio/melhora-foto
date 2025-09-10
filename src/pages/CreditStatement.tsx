@@ -37,7 +37,7 @@ const CreditStatement: React.FC = () => {
   const [usageHistory, setUsageHistory] = useState<CreditUsage[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalAvailable, setTotalAvailable] = useState(0);
-  const [totalExpired, setTotalExpired] = useState(0);
+  const [totalUsed, setTotalUsed] = useState(0);
   useEffect(() => {
     if (user) {
       fetchCreditData();
@@ -75,17 +75,16 @@ const CreditStatement: React.FC = () => {
       // Calculate totals
       const now = new Date();
       let available = 0;
-      let expired = 0;
+      let used = 0;
       purchasesData?.forEach(purchase => {
         const expirationDate = new Date(purchase.expiration_date);
         if (expirationDate > now) {
           available += purchase.available_amount;
-        } else {
-          expired += purchase.available_amount;
         }
+        used += purchase.used_amount;
       });
       setTotalAvailable(available);
-      setTotalExpired(expired);
+      setTotalUsed(used);
     } catch (error) {
       console.error('Error fetching credit data:', error);
     } finally {
@@ -145,7 +144,7 @@ const CreditStatement: React.FC = () => {
               <Calendar className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{totalExpired}</div>
+              <div className="text-2xl font-bold text-red-600">{totalUsed}</div>
               <p className="text-xs text-muted-foreground">Créditos que foram utilizados</p>
             </CardContent>
           </Card>
