@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PhotoProcessing } from '@/components/PhotoProcessing';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface PhotoUploadProps {
   availablePhotos: number;
@@ -28,7 +29,8 @@ export const PhotoUpload = ({
   const [photosToProcess, setPhotosToProcess] = useState<Array<{ name: string; url: string }>>([]);
   
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, hasSelectedStyle } = useAuth();
+  const navigate = useNavigate();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const remainingSlots = availablePhotos - uploadedFiles.length;
@@ -132,6 +134,19 @@ export const PhotoUpload = ({
         description: "Você não tem créditos suficientes para processar essas fotos.",
         variant: "destructive"
       });
+      return;
+    }
+    
+    // Check if user has selected a style
+    if (hasSelectedStyle === false) {
+      // Save the photos that user wanted to transform and redirect to style selection
+      localStorage.setItem('pendingPhotos', JSON.stringify({
+        uploadedFiles: uploadedFiles.map(f => f.name),
+        selectedPhotos: Array.from(selectedPhotos),
+        timestamp: Date.now()
+      }));
+      
+      navigate('/style-selection');
       return;
     }
     

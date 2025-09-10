@@ -21,10 +21,11 @@ import rusticoMadeira from "@/assets/rustico-madeira.jpg";
 
 const StyleSelection = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, checkUserStyle } = useAuth();
   const { toast } = useToast();
   const [selectedStyle, setSelectedStyle] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasPendingPhotos, setHasPendingPhotos] = useState(false);
   
   const styles = [
     {
@@ -83,8 +84,14 @@ const StyleSelection = () => {
     }
   ];
 
-  // Check if user already has a selected style
+  // Check if user already has a selected style and if there are pending photos
   useEffect(() => {
+    // Check for pending photos
+    const pendingPhotos = localStorage.getItem('pendingPhotos');
+    if (pendingPhotos) {
+      setHasPendingPhotos(true);
+    }
+
     const checkExistingStyle = async () => {
       if (!user) return;
       
@@ -128,6 +135,7 @@ const StyleSelection = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const { error } = await supabase
         .from('user_styles')
@@ -143,7 +151,18 @@ const StyleSelection = () => {
         throw error;
       }
 
-      navigate("/dashboard");
+      // Update the AuthContext state
+      await checkUserStyle();
+
+      // Check if there are pending photos to process
+      const pendingPhotos = localStorage.getItem('pendingPhotos');
+      if (pendingPhotos) {
+        // Clear pending photos and redirect to dashboard
+        localStorage.removeItem('pendingPhotos');
+        navigate("/dashboard?autoStart=true");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error('Error saving style:', error);
       toast({
@@ -151,6 +170,8 @@ const StyleSelection = () => {
         description: "Não foi possível salvar o estilo selecionado. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return <div className="min-h-screen bg-background">
@@ -159,11 +180,32 @@ const StyleSelection = () => {
       <main className="container py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Escolha o estilo que melhor representa o seu restaurante</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              {hasPendingPhotos ? 
+                "Escolha o estilo antes de processar suas fotos" : 
+                "Escolha o estilo que melhor representa o seu restaurante"
+              }
+            </h1>
             <div className="max-w-6xl mx-auto">
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6">
-                <p className="text-sm sm:text-base text-blue-800 dark:text-blue-200">
-                  <strong>💡 Dica importante:</strong> A seleção adequada do estilo conforme o perfil do seu restaurante é essencial para otimizar suas fotos de acordo com o perfil dos seus clientes e maximizar a conversão de vendas.
+              <div className={`border rounded-lg p-4 sm:p-6 ${
+                hasPendingPhotos ? 
+                  'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800' :
+                  'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+              }`}>
+                <p className={`text-sm sm:text-base ${
+                  hasPendingPhotos ? 
+                    'text-orange-800 dark:text-orange-200' : 
+                    'text-blue-800 dark:text-blue-200'
+                }`}>
+                  {hasPendingPhotos ? (
+                    <>
+                      <strong>⚠️ Atenção:</strong> Você tem fotos aguardando processamento. Selecione um estilo para continuar com a transformação.
+                    </>
+                  ) : (
+                    <>
+                      <strong>💡 Dica importante:</strong> A seleção adequada do estilo conforme o perfil do seu restaurante é essencial para otimizar suas fotos de acordo com o perfil dos seus clientes e maximizar a conversão de vendas.
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -187,10 +229,22 @@ const StyleSelection = () => {
             <Button 
               onClick={handleContinue} 
               size="lg"
+              disabled={isLoading || !selectedStyle}
               className={`px-6 sm:px-12 py-4 text-sm sm:text-lg w-full sm:w-auto ${selectedStyle ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-400 text-gray-600 cursor-default'}`}
             >
-              <span className="hidden sm:inline">Profissionalizar fotos com o estilo escolhido</span>
-              <span className="sm:hidden">Continuar com estilo escolhido</span>
+              {isLoading ? (
+                "Salvando estilo..."
+              ) : hasPendingPhotos ? (
+                <>
+                  <span className="hidden sm:inline">Processar fotos com este estilo</span>
+                  <span className="sm:hidden">Processar fotos</span>
+                </>
+              ) : (
+                <>
+                  <span className="hidden sm:inline">Profissionalizar fotos com o estilo escolhido</span>
+                  <span className="sm:hidden">Continuar com estilo escolhido</span>
+                </>
+              )}
             </Button>
           </div>
         </div>
