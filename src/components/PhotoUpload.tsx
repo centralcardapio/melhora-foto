@@ -84,7 +84,14 @@ export const PhotoUpload = ({
   const uploadFileToStorage = async (file: File, fileName: string): Promise<string | null> => {
     try {
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user!.id}/${Date.now()}-${fileName}.${fileExt}`;
+      // Sanitize filename - remove special characters and spaces
+      const sanitizedName = fileName
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Remove accents
+        .replace(/[^a-zA-Z0-9.-]/g, '_') // Replace special chars with underscore
+        .replace(/_{2,}/g, '_'); // Replace multiple underscores with single
+      
+      const filePath = `${user!.id}/${Date.now()}-${sanitizedName}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('photos')
@@ -162,26 +169,17 @@ export const PhotoUpload = ({
         }
       }
 
-      // Decrease user photo credits by the number of photos being processed
-      const { data: currentCredits, error: fetchError } = await supabase
-        .from('photo_credits')
-        .select('total_used')
-        .eq('user_id', user.id)
-        .single();
+      // Use credits from the new credit_purchases system
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const { error: creditError } = await supabase.rpc('use_credits', {
+        user_id_param: authUser!.id,
+        credits_to_use: photos.length,
+        description_param: `Transformação de ${photos.length} foto${photos.length > 1 ? 's' : ''}`
+      });
 
-      if (fetchError) {
-        console.error('Error fetching current credits:', fetchError);
-      } else {
-        const { error: creditError } = await supabase
-          .from('photo_credits')
-          .update({
-            total_used: (currentCredits?.total_used || 0) + photos.length
-          })
-          .eq('user_id', user.id);
-
-        if (creditError) {
-          console.error('Error updating photo credits:', creditError);
-        }
+      if (creditError) {
+        console.error('Error using credits:', creditError);
+        throw new Error('Erro ao usar créditos');
       }
 
       // Start processing
