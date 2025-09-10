@@ -21,6 +21,15 @@ export const Hero = () => {
               <p className="text-xl text-muted-foreground max-w-lg">
                 Consolidamos as melhores técnicas de fotografia profissional gastronômica e food styling para tornar seus pratos irresistíveis e aumentar suas vendas no delivery.
               </p>
+              
+              <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl p-4">
+                <p className="text-lg font-semibold text-primary mb-1">
+                  🎁 Teste Gratuito Disponível!
+                </p>
+                <p className="text-muted-foreground">
+                  Experimente 2 fotos profissionais gratuitas ao se cadastrar. Veja a diferença antes de escolher seu plano.
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

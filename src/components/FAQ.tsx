@@ -7,22 +7,22 @@ const faqs = [{
   answer: "Sim! Nossa tecnologia apenas melhora a apresentação visual da foto, mantendo o aspecto autêntico do prato. Não criamos elementos que não existem - apenas realçamos o que já está presente na imagem original."
 }, {
   question: "Quanto tempo demora o processamento?",
-  answer: "O processamento é bem rápido! A maioria das fotos fica pronta em até 2 minutos. Para clientes dos planos Professional e Complete, oferecemos processamento prioritário."
+  answer: "O processamento é bem rápido! A maioria das fotos fica pronta em poucos minutos."
 }, {
   question: "Que tipo de foto posso enviar?",
   answer: "Você pode enviar fotos tiradas com celular, câmera digital ou qualquer dispositivo. Recomendamos fotos com boa resolução e que mostrem bem o prato. Nossa IA trabalha melhor com fotos que não estejam muito escuras."
 }, {
   question: "Posso reprovar uma foto e gerar nova versão?",
-  answer: "Sim! Se você não gostar do resultado, pode reprovar a foto e nossa IA gerará 2 novas versões para você escolher. Clientes dos planos Professional e Complete têm reprocessamento gratuito incluso."
+  answer: "Sim! Se você não gostar do resultado, pode reprovar a foto e nossa IA gerará 2 novas versões para você escolher."
+}, {
+  question: "Posso escolher o estilo do meu restaurante?",
+  answer: "Claro, solicitaremos que você escolha o estilo do seu restaurante logo após o cadastro para otimizar as suas fotos considerando o seu público."
 }, {
   question: "Os créditos têm prazo de validade?",
   answer: "Sim, todos os créditos são válidos por 30 dias a partir da data da compra. Recomendamos processar suas fotos logo após a aquisição do plano."
 }, {
   question: "Como faço o download das fotos?",
   answer: "Você pode fazer download individual de cada foto ou baixar todas de uma vez em um arquivo compactado. As fotos processadas ficam disponíveis na sua área do usuário."
-}, {
-  question: "Existe garantia de satisfação?",
-  answer: "Sim! Oferecemos garantia de satisfação. Se você não ficar satisfeito com os resultados, entre em contato conosco e faremos o possível para resolver a situação."
 }];
 export const FAQ = () => {
   return <section id="faq" className="bg-muted/30 py-[20px]">
