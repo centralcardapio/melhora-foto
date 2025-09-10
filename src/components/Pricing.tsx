@@ -13,14 +13,14 @@ const plans = [{
 }, {
   name: "Chef",
   photos: 20,
-  price: 149,
+  price: 159,
   description: "Perfeito para cardápios médios",
   features: ["<strong>20 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: true
 }, {
   name: "Reserva",
   photos: 30,
-  price: 199,
+  price: 219,
   description: "Para cardápios completos",
   features: ["<strong>30 fotos profissionais</strong>", "<strong>Importação de fotos de plataformas de delivery</strong>", "Processamento prioritário", "Download individual", "Download em lote", "Suporte via e-mail"],
   popular: false

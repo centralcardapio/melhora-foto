@@ -24,6 +24,7 @@ export const PhotoUpload = ({
   const [importedPhotos, setImportedPhotos] = useState<string[]>([]);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<number>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isStartingProcess, setIsStartingProcess] = useState(false);
   const [photosToProcess, setPhotosToProcess] = useState<Array<{ name: string; url: string }>>([]);
   
   const { toast } = useToast();
@@ -106,7 +107,9 @@ export const PhotoUpload = ({
   };
 
   const handleTransformPhotos = async () => {
-    if (!user) return;
+    if (!user || isStartingProcess) return;
+    
+    setIsStartingProcess(true);
     
     // Prepare photos to process
     const photos = [];
@@ -192,6 +195,8 @@ export const PhotoUpload = ({
         description: "Não foi possível iniciar o processamento. Tente novamente.",
         variant: "destructive"
       });
+    } finally {
+      setIsStartingProcess(false);
     }
   };
 
@@ -330,9 +335,14 @@ export const PhotoUpload = ({
 
         {(uploadedFiles.length > 0 || selectedPhotos.size > 0) && (
           <div className="pt-4 border-t">
-            <Button size="lg" className="w-full" onClick={handleTransformPhotos}>
+            <Button 
+              size="lg" 
+              className="w-full" 
+              onClick={handleTransformPhotos}
+              disabled={isStartingProcess || isProcessing}
+            >
               <Download className="h-4 w-4 mr-2" />
-              Transformar {uploadedFiles.length + selectedPhotos.size} Fotos
+              {isStartingProcess ? "Iniciando processamento..." : `Transformar ${uploadedFiles.length + selectedPhotos.size} Fotos`}
             </Button>
           </div>
         )}

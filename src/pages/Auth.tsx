@@ -43,17 +43,32 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const plan = searchParams.get("plan");
   
-  const { signUp, signIn, signInWithGoogle, user, loading } = useAuth();
+  const { signUp, signIn, signInWithGoogle, user, loading, checkUserStyle } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const checkUserStyleAndRedirect = async () => {
+    if (!user) return;
+    
+    try {
+      const hasSelectedStyle = await checkUserStyle();
+      if (hasSelectedStyle) {
+        navigate("/dashboard");
+      } else {
+        navigate("/style-selection");
+      }
+    } catch (error) {
+      console.error('Error checking user style:', error);
+      navigate("/style-selection");
+    }
+  };
 
   useEffect(() => {
     console.log('Auth page useEffect - user:', !!user, 'loading:', loading);
     
     if (!loading && user) {
-      // User is authenticated, redirect to dashboard
-      console.log('Redirecting to dashboard');
-      navigate("/dashboard");
+      // For authenticated users, check if they have selected a style
+      checkUserStyleAndRedirect();
     }
     
     // Check if URL indicates login mode
