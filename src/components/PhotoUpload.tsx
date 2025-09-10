@@ -179,7 +179,25 @@ export const PhotoUpload = ({
     if (photos.length === 0) return;
 
     try {
-      // Save photo transformations to database
+      // FIRST: Use credits from the new credit_purchases system
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const { data: creditSuccess, error: creditError } = await supabase.rpc('use_credits', {
+        user_id_param: authUser!.id,
+        credits_to_use: photos.length,
+        description_param: `Transformação de ${photos.length} foto${photos.length > 1 ? 's' : ''}`
+      });
+
+      if (creditError || !creditSuccess) {
+        console.error('Error using credits:', creditError);
+        toast({
+          title: "Créditos insuficientes",
+          description: "Você não tem créditos suficientes para processar essas fotos.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // ONLY AFTER credits are successfully used, save photo transformations to database
       for (const photo of photos) {
         const { error } = await supabase
           .from('photo_transformations')
@@ -200,20 +218,8 @@ export const PhotoUpload = ({
 
         if (error) {
           console.error('Error saving photo transformation:', error);
+          throw new Error('Erro ao salvar transformação');
         }
-      }
-
-      // Use credits from the new credit_purchases system
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      const { error: creditError } = await supabase.rpc('use_credits', {
-        user_id_param: authUser!.id,
-        credits_to_use: photos.length,
-        description_param: `Transformação de ${photos.length} foto${photos.length > 1 ? 's' : ''}`
-      });
-
-      if (creditError) {
-        console.error('Error using credits:', creditError);
-        throw new Error('Erro ao usar créditos');
       }
 
       // Start processing
