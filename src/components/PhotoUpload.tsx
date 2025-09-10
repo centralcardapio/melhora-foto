@@ -52,11 +52,15 @@ export const PhotoUpload = ({
   } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.bmp']
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
+      'image/bmp': ['.bmp']
     },
     maxFiles: availablePhotos - uploadedFiles.length,
     onDropRejected: (rejectedFiles) => {
       if (rejectedFiles.length > 0) {
+        console.log('Rejected files:', rejectedFiles.map(f => ({ name: f.file.name, type: f.file.type, errors: f.errors })));
         toast({
           title: "Formato de arquivo não aceito",
           description: "Por favor, envie apenas imagens nos formatos: JPG, JPEG, PNG, WebP ou BMP.",
