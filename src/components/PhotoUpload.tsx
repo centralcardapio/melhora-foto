@@ -37,8 +37,8 @@ export const PhotoUpload = ({
     const filesToAdd = acceptedFiles.slice(0, remainingSlots);
     if (acceptedFiles.length > remainingSlots) {
       toast({
-        title: "Limite de fotos atingido",
-        description: `Você pode adicionar apenas ${remainingSlots} fotos com seus créditos atuais.`,
+        title: "Créditos insuficientes",
+        description: `Você está tentando enviar mais fotos do que seus créditos disponíveis. Você tem ${availablePhotos} créditos disponíveis. Deseja comprar mais créditos?`,
         variant: "destructive"
       });
     }
