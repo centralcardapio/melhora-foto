@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ChefHat, Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import { supabase } from "@/integrations/supabase/client";
+import { translateErrorMessage } from "@/lib/errorMessages";
 
 // Password validation functions
 const validatePassword = (password: string) => {
@@ -127,7 +128,7 @@ const Auth = () => {
     if (error) {
       toast({
         title: "Erro no cadastro",
-        description: error.message,
+        description: translateErrorMessage(error.message),
         variant: "destructive",
       });
     } else {
@@ -159,7 +160,7 @@ const Auth = () => {
     if (error) {
       toast({
         title: "Erro no login",
-        description: error.message,
+        description: translateErrorMessage(error.message),
         variant: "destructive",
       });
     }
@@ -185,7 +186,7 @@ const Auth = () => {
     if (error) {
       toast({
         title: "Erro",
-        description: error.message,
+        description: translateErrorMessage(error.message),
         variant: "destructive",
       });
     } else {
@@ -206,7 +207,7 @@ const Auth = () => {
     if (error) {
       toast({
         title: "Erro no login",
-        description: error.message,
+        description: translateErrorMessage(error.message),
         variant: "destructive",
       });
     }
