@@ -57,7 +57,6 @@ export const PhotoUpload = ({
       'image/webp': ['.webp'],
       'image/bmp': ['.bmp']
     },
-    maxFiles: availablePhotos - uploadedFiles.length,
     onDropRejected: (rejectedFiles) => {
       if (rejectedFiles.length > 0) {
         console.log('Rejected files:', rejectedFiles.map(f => ({ name: f.file.name, type: f.file.type, errors: f.errors })));
