@@ -1,11 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Camera } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Check } from "lucide-react";
 
-const plans = [
+interface Plan {
+  name: string;
+  photos: number;
+  price: number;
+  description: string;
+  features: string[];
+  popular: boolean;
+}
+
+interface PricingPlansProps {
+  onPlanSelect: (plan: Plan) => void;
+}
+
+const plans: Plan[] = [
   {
     name: "Degustação",
     photos: 10,
@@ -32,23 +42,19 @@ const plans = [
   }
 ];
 
-export const PricingPlans = () => {
-  const navigate = useNavigate();
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-
-  const handlePlanSelect = (planName: string) => {
-    setSelectedPlan(planName);
-    // TODO: Implement payment flow
-    console.log(`Selected plan: ${planName}`);
+export const PricingPlans = ({ onPlanSelect }: PricingPlansProps) => {
+  const handlePlanSelect = (plan: Plan) => {
+    onPlanSelect(plan);
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
+    <div className="space-y-8">
+      <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto items-stretch">
       {plans.map((plan, index) => (
         <Card 
           key={index} 
-          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} ${selectedPlan === plan.name ? 'bg-orange-50' : ''} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
-          onClick={() => handlePlanSelect(plan.name)}
+          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
+          onClick={() => handlePlanSelect(plan)}
         >
           {plan.popular && (
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -77,9 +83,10 @@ export const PricingPlans = () => {
               </div>
             ))}
           </CardContent>
-
         </Card>
       ))}
+      </div>
+      
     </div>
   );
 };

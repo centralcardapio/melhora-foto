@@ -1,5 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+
+// Criando um tipo para os metadados do usuário
+export interface UserMetadata {
+  full_name?: string;
+  avatar_url?: string;
+}
+
+// Tipo para o usuário com metadados estendidos
+export type User = SupabaseUser & {
+  user_metadata?: UserMetadata;
+};
 import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {

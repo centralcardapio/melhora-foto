@@ -2,19 +2,32 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { PricingPlans } from "@/components/PricingPlans";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { usePaymentLink } from "@/hooks/usePaymentLink";
+
+interface Plan {
+  name: string;
+  photos: number;
+  price: number;
+  description: string;
+  features: string[];
+  popular: boolean;
+}
 
 const Plans = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [availableCredits, setAvailableCredits] = useState(0);
   const [hasUsedCredits, setHasUsedCredits] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { createPaymentLink } = usePaymentLink();
 
   // Fetch user's credit information
   useEffect(() => {
@@ -51,6 +64,40 @@ const Plans = () => {
     fetchCredits();
   }, [user]);
 
+  const handlePlanSelect = (plan: Plan) => {
+    setSelectedPlan(plan);
+  };
+
+  const handlePayment = async () => {
+    if (!selectedPlan || !user) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      toast.info("Preparando seu pagamento...");
+      
+      const paymentLink = await createPaymentLink({
+        planName: selectedPlan.name,
+        value: selectedPlan.price,
+        userEmail: user.email || '',
+        userName: user.user_metadata?.full_name || 'Cliente',
+        userId: user.id, // ID do usuário no banco de dados
+      });
+      
+      if (paymentLink?.url) {
+        // Abre o link de pagamento em uma nova aba
+        window.open(paymentLink.url, '_blank');
+        // Redireciona para a página de status de pagamento
+        navigate('/payment/status?status=pending');
+      }
+    } catch (error) {
+      console.error('Erro ao processar pagamento:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao processar pagamento';
+      toast.error(`Não foi possível processar o pagamento: ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +118,7 @@ const Plans = () => {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
             {/* Planos à esquerda */}
             <div className="xl:col-span-2">
-              <PricingPlans />
+              <PricingPlans onPlanSelect={handlePlanSelect} />
             </div>
 
             {/* Checkout à direita */}
@@ -84,14 +131,48 @@ const Plans = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="border border-dashed border-primary/30 rounded-lg p-6 text-center space-y-3">
-                    <div className="text-muted-foreground text-sm">
-                      Nenhum plano selecionado
+                  {selectedPlan ? (
+                    <div className="border border-primary/30 rounded-lg p-6 space-y-4">
+                      <div className="space-y-2">
+                        <h3 className="font-medium">{selectedPlan.name}</h3>
+                        <p className="text-2xl font-bold">R$ {selectedPlan.price.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground">{selectedPlan.description}</p>
+                      </div>
+                      
+                      <div className="space-y-2 pt-4 border-t">
+                        <div className="flex justify-between text-sm">
+                          <span>Fotos inclusas:</span>
+                          <span className="font-medium">{selectedPlan.photos} fotos</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Processamento:</span>
+                          <span className="text-green-500 font-medium">Prioritário</span>
+                        </div>
+                      </div>
+                      
+                      <div className="pt-4">
+                        <Button 
+                          className="w-full"
+                          onClick={handlePayment}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? 'Processando...' : 'Finalizar Compra'}
+                        </Button>
+                        <p className="mt-2 text-xs text-muted-foreground text-center">
+                          Você será redirecionado para o ambiente seguro do Asaas
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Selecione um plano ao lado para continuar
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="border border-dashed border-primary/30 rounded-lg p-6 text-center space-y-3">
+                      <div className="text-muted-foreground text-sm">
+                        Nenhum plano selecionado
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Selecione um plano ao lado para continuar
+                      </p>
+                    </div>
+                  )}
 
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -115,7 +196,7 @@ const Plans = () => {
 
                   <div className="pt-4 border-t">
                     <p className="text-xs text-muted-foreground text-center">
-                      Pagamento 100% seguro via Stripe
+                      Pagamento 100% seguro via Asaas
                     </p>
                   </div>
                 </CardContent>
