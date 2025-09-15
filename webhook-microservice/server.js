@@ -9,9 +9,19 @@ import dotenv from 'dotenv';
 // Carregar variáveis de ambiente
 dotenv.config();
 
+console.log('🚀 Iniciando microserviço de webhook...');
+console.log('📋 Variáveis de ambiente carregadas');
+console.log('🔧 NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('🔧 PORT:', process.env.PORT || '3001');
+
 // Configuração do Supabase
 const supabaseUrl = process.env.SUPABASE_URL || 'https://tskdtjqxrqjfntushmup.supabase.co';
 const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRza2R0anF4cnFqZm50dXNobXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyNzA5NzYsImV4cCI6MjA3MDg0Njk3Nn0.coeMbQ-Zmk3og8K6atGZtk-Vw8s5tubuogR8D-3aKV4';
+
+console.log('🔧 Configuração do Supabase:');
+console.log('URL:', supabaseUrl);
+console.log('Key:', supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'NÃO DEFINIDA');
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Mapeamento de planos para créditos
@@ -32,11 +42,24 @@ app.use(express.json({ limit: '10mb' }));
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    service: 'asaas-webhook-microservice'
-  });
+  try {
+    console.log('🏥 Health check solicitado');
+    res.status(200).json({ 
+      status: 'OK', 
+      timestamp: new Date().toISOString(),
+      service: 'asaas-webhook-microservice',
+      port: PORT,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    console.error('❌ Erro no health check:', error);
+    res.status(500).json({ 
+      status: 'ERROR', 
+      timestamp: new Date().toISOString(),
+      service: 'asaas-webhook-microservice',
+      error: error.message
+    });
+  }
 });
 
 // Endpoint principal para webhooks do Asaas
@@ -214,4 +237,8 @@ app.listen(PORT, () => {
   console.log(`📡 Endpoint: http://localhost:${PORT}/api/webhooks/asaas`);
   console.log(`🏥 Health: http://localhost:${PORT}/health`);
   console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ Servidor iniciado com sucesso!`);
+}).on('error', (error) => {
+  console.error('❌ Erro ao iniciar servidor:', error);
+  process.exit(1);
 });
