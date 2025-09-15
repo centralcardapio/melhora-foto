@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "functions": {
-    "api/asaas/paymentLinks.ts": {
+    "api/asaas/paymentLinks.js": {
       "runtime": "@vercel/node@4.0.0"
     }
   },
