@@ -98,12 +98,13 @@ app.post('/api/webhooks/asaas', async (req, res) => {
 async function processPaymentConfirmed(payment) {
   try {
     console.log('✅ Processando pagamento confirmado:', payment.id);
+    console.log('🔍 External Reference:', payment.externalReference);
 
-    // 1. Buscar dados do pagamento no banco
+    // 1. Buscar dados do pagamento no banco pelo external_reference
     const { data: paymentRecord, error: fetchError } = await supabase
       .from('payments')
       .select('*')
-      .eq('payment_id', payment.id)
+      .eq('external_reference', payment.externalReference)
       .single();
 
     if (fetchError) {
@@ -117,11 +118,12 @@ async function processPaymentConfirmed(payment) {
     const { error: updateError } = await supabase
       .from('payments')
       .update({
+        payment_id: payment.id, // Salvar o ID real do pagamento
         status: 'CONFIRMED',
         payment_date: payment.paymentDate || new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .eq('payment_id', payment.id);
+      .eq('external_reference', payment.externalReference);
 
     if (updateError) {
       console.error('❌ Erro ao atualizar pagamento:', updateError);
