@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "basePath": "/foto",
   "functions": {
     "api/asaas/paymentLinks.js": {
       "runtime": "@vercel/node@4.0.0"
@@ -9,7 +10,7 @@
   },
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/foto/(.*)",
       "destination": "/index.html"
     }
   ],

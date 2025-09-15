@@ -9,10 +9,10 @@ export const asaasConfig = {
   apiKey: import.meta.env.VITE_ASAAS_API_KEY,
   
   // Configurações de notificação
-  webhookUrl: `${window.location.origin}/api/webhook/asaas`,
+  webhookUrl: `${window.location.origin}/foto/api/webhook/asaas`,
   
   // Configurações de redirecionamento
-  successUrl: `${window.location.origin}/payment/status`,
+  successUrl: `${window.location.origin}/foto/payment/status`,
   dueDateLimitDays: 3, // Dias para vencimento do boleto
 };
 

@@ -12,6 +12,7 @@ export default defineConfig(({ mode }): UserConfig => {
   // Debug das variáveis de ambiente (removido para limpeza)
   
   return {
+    base: '/foto/',
     server: {
       host: "::",
       port: 8080,
