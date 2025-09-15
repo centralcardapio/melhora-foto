@@ -2,7 +2,7 @@
 export const asaasConfig = {
   // URL base da API (sandbox ou produção)
   apiUrl: import.meta.env.PROD
-    ? 'https://api.asaas.com/v3'
+    ? '/api/asaas'  // Usar proxy do Vercel em produção
     : 'https://api-sandbox.asaas.com/v3',
   
   // Chave de API (obrigatória)

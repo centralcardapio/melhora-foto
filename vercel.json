@@ -4,8 +4,31 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/asaas/(.*)",
+      "destination": "https://api-sandbox.asaas.com/v3/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/asaas/(.*)",
+      "headers": [
+        {
+          "key": "access_token",
+          "value": "$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjNjM2QxY2MyLTUwMzctNDlhOS1iYTM4LTE5NTllMzU1NzU0MTo6JGFhY2hfNmJhN2YxZWEtODNiZS00ZTM1LTk4NDUtYmI2MDNjZmU0MmFi"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ]
     }
   ],
   "env": {

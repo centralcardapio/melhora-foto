@@ -7,9 +7,9 @@ import {
   ChargeType
 } from '@/types/asaas';
 
-// Configuração do Axios para usar o proxy do Vite
+// Configuração do Axios para usar o proxy do Vite/Vercel
 const api = axios.create({
-  baseURL: import.meta.env.DEV ? '/api/asaas' : asaasConfig.apiUrl,
+  baseURL: asaasConfig.apiUrl,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -20,8 +20,9 @@ const api = axios.create({
 
 // Adiciona o token de acesso em todas as requisições
 api.interceptors.request.use(config => {
-  // Em desenvolvimento, o proxy já adiciona o token
-  if (!import.meta.env.DEV && asaasConfig.apiKey) {
+  // Em produção, o Vercel proxy já adiciona o token via headers
+  // Em desenvolvimento, o Vite proxy adiciona o token
+  if (import.meta.env.DEV && asaasConfig.apiKey) {
     config.headers['access_token'] = asaasConfig.apiKey;
   }
   return config;
