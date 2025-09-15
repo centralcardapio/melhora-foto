@@ -36,10 +36,62 @@ export const PaymentStatus = () => {
   const [error, setError] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
+  const checkPaymentStatus = async () => {
+    try {
+      console.log('🔍 Verificando status do pagamento...');
+      
+      if (!user?.id) {
+        console.error('Usuário não encontrado');
+        return;
+      }
+      
+      // Buscar o último pagamento do usuário
+      const { data: payments, error: paymentsError } = await supabase
+        .from('payments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (paymentsError) {
+        console.error('Erro ao buscar pagamentos:', paymentsError);
+        return;
+      }
+      
+      if (payments && payments.length > 0) {
+        const latestPayment = payments[0];
+        console.log('🔍 Último pagamento encontrado:', {
+          id: latestPayment.id,
+          status: latestPayment.status,
+          plan: latestPayment.plan_name,
+          created: latestPayment.created_at
+        });
+        
+        if (latestPayment.status === 'CONFIRMED') {
+          console.log('✅ Pagamento confirmado! Redirecionando para dashboard...');
+          toast.success('Pagamento aprovado com sucesso!');
+          navigate('/dashboard');
+          return;
+        } else if (latestPayment.status === 'PENDING') {
+          console.log('⏳ Pagamento ainda pendente...');
+          toast.info('Pagamento ainda está sendo processado. Tente novamente em alguns instantes.');
+          return;
+        }
+      }
+      
+      console.log('❌ Nenhum pagamento encontrado');
+      toast.error('Nenhum pagamento encontrado');
+      
+    } catch (error) {
+      console.error('Erro ao verificar status do pagamento:', error);
+      toast.error('Erro ao verificar status do pagamento');
+    }
+  };
+
   useEffect(() => {
     let pollInterval: NodeJS.Timeout | null = null;
     
-    const checkPaymentStatus = async () => {
+    const checkPaymentStatusEffect = async () => {
       try {
         const params = new URLSearchParams(location.search);
         const paymentId = params.get('payment_id');
@@ -104,7 +156,7 @@ export const PaymentStatus = () => {
                     console.log('🔄 Iniciando polling para verificar status...');
                     pollInterval = setInterval(async () => {
                       console.log('🔄 Verificando status novamente...');
-                      await checkPaymentStatus();
+                      await checkPaymentStatusEffect();
                     }, 5000); // Verificar a cada 5 segundos
                   }
                   
@@ -173,7 +225,7 @@ export const PaymentStatus = () => {
       }
     };
 
-    checkPaymentStatus();
+    checkPaymentStatusEffect();
     
     // Cleanup function para limpar o polling
     return () => {
@@ -198,14 +250,38 @@ export const PaymentStatus = () => {
     }
 
     if (error) {
+      // Se o erro for "Nenhuma informação de pagamento encontrada" e status for PENDING, 
+      // tratamos como aguardando pagamento
+      const isWaitingForPayment = error === 'Nenhuma informação de pagamento encontrada' && status === 'PENDING';
+      
       return (
         <div className="flex flex-col items-center justify-center space-y-4 p-6 text-center">
-          <AlertCircle className="h-16 w-16 text-destructive" />
-          <h2 className="text-2xl font-bold">Ocorreu um erro</h2>
-          <p className="text-muted-foreground">{error}</p>
+          {isWaitingForPayment ? (
+            <Clock className="h-16 w-16 text-amber-500" />
+          ) : (
+            <AlertCircle className="h-16 w-16 text-destructive" />
+          )}
+          <h2 className="text-2xl font-bold">
+            {isWaitingForPayment ? 'Aguardando Pagamento' : 'Ocorreu um erro'}
+          </h2>
+          <p className="text-muted-foreground">
+            {isWaitingForPayment 
+              ? 'Seu pagamento está sendo processado. Clique em "Verificar Status" para atualizar.'
+              : error
+            }
+          </p>
           <div className="mt-6 space-x-4">
-            <Button onClick={() => window.location.reload()} variant="outline">
-              Tentar novamente
+            <Button 
+              onClick={async () => {
+                if (isWaitingForPayment) {
+                  await checkPaymentStatus();
+                } else {
+                  window.location.reload();
+                }
+              }} 
+              variant="outline"
+            >
+              {isWaitingForPayment ? 'Verificar Status' : 'Tentar novamente'}
             </Button>
             <Button onClick={() => navigate('/plans')}>
               Voltar para planos
