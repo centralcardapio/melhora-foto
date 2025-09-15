@@ -1,6 +1,16 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Configurar CORS para todos os métodos
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, access_token');
+  
+  // Responder a requisições OPTIONS (preflight)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   // Extrair o path dos parâmetros
   const { path } = req.query;
   const pathArray = Array.isArray(path) ? path : [path];
@@ -40,10 +50,7 @@ async function handleRequest(req: VercelRequest, res: VercelResponse, path: stri
     // Obter a resposta
     const responseData = await response.text();
     
-    // Configurar headers CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, access_token');
+    // Configurar Content-Type
     res.setHeader('Content-Type', 'application/json');
     
     // Retornar a resposta
