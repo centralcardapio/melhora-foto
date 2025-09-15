@@ -12,14 +12,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const apiKey = process.env.VITE_ASAAS_API_KEY;
+    // Tentar diferentes nomes de variáveis de ambiente
+    const apiKey = process.env.VITE_ASAAS_API_KEY || process.env.ASAAS_API_KEY;
+    
+    console.log('🔍 Variáveis de ambiente disponíveis:', {
+      VITE_ASAAS_API_KEY: process.env.VITE_ASAAS_API_KEY ? 'Definida' : 'Não definida',
+      ASAAS_API_KEY: process.env.ASAAS_API_KEY ? 'Definida' : 'Não definida',
+      NODE_ENV: process.env.NODE_ENV
+    });
     
     if (!apiKey) {
-      console.error('❌ API key não configurada');
-      return res.status(500).json({ error: 'API key not configured' });
+      console.error('❌ API key não configurada em nenhuma variável');
+      return res.status(500).json({ 
+        error: 'API key not configured',
+        availableEnvVars: Object.keys(process.env).filter(key => key.includes('ASAAS'))
+      });
     }
 
     console.log('🔑 API Key encontrada:', apiKey.substring(0, 20) + '...');
+
+    console.log('📤 Fazendo requisição para API Asaas:', {
+      method: req.method,
+      url: 'https://api-sandbox.asaas.com/v3/paymentLinks',
+      body: req.body
+    });
 
     // Fazer a requisição para a API do Asaas
     const response = await fetch('https://api-sandbox.asaas.com/v3/paymentLinks', {
@@ -32,7 +48,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
     });
 
-    console.log('📡 Resposta da API Asaas:', response.status, response.statusText);
+    console.log('📡 Resposta da API Asaas:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
 
     // Obter a resposta
     const responseData = await response.text();
