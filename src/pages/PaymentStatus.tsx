@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PaymentStatusService } from '@/services/paymentStatusService';
 import { useWebhook } from '@/hooks/useWebhook';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 type PaymentStatus = 
   | 'PENDING' // Aguardando pagamento
@@ -36,6 +37,8 @@ export const PaymentStatus = () => {
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
   useEffect(() => {
+    let pollInterval: NodeJS.Timeout | null = null;
+    
     const checkPaymentStatus = async () => {
       try {
         const params = new URLSearchParams(location.search);
@@ -47,6 +50,8 @@ export const PaymentStatus = () => {
           // Se for PENDING, tentamos buscar o status real do banco
           if (statusParam === 'PENDING') {
             try {
+              console.log('🔍 Verificando status real do pagamento...');
+              
               // Buscar o último pagamento do usuário
               const { data: payments, error: paymentsError } = await supabase
                 .from('payments')
@@ -64,12 +69,45 @@ export const PaymentStatus = () => {
               
               if (payments && payments.length > 0) {
                 const latestPayment = payments[0];
-                console.log('🔍 Último pagamento encontrado:', latestPayment.status);
+                console.log('🔍 Último pagamento encontrado:', {
+                  id: latestPayment.id,
+                  status: latestPayment.status,
+                  plan: latestPayment.plan_name,
+                  created: latestPayment.created_at
+                });
                 
                 if (latestPayment.status === 'CONFIRMED') {
+                  console.log('✅ Pagamento confirmado! Atualizando status...');
                   setStatus('CONFIRMED');
                   toast.success('Pagamento aprovado com sucesso!');
                   setIsLoading(false);
+                  
+                  // Atualizar a URL para refletir o status real
+                  const newUrl = new URL(window.location.href);
+                  newUrl.searchParams.set('status', 'CONFIRMED');
+                  window.history.replaceState({}, '', newUrl.toString());
+                  
+                  // Limpar o polling se existir
+                  if (pollInterval) {
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                  }
+                  
+                  return;
+                } else if (latestPayment.status === 'PENDING') {
+                  console.log('⏳ Pagamento ainda pendente...');
+                  setStatus('PENDING');
+                  setIsLoading(false);
+                  
+                  // Iniciar polling para verificar status a cada 5 segundos
+                  if (!pollInterval) {
+                    console.log('🔄 Iniciando polling para verificar status...');
+                    pollInterval = setInterval(async () => {
+                      console.log('🔄 Verificando status novamente...');
+                      await checkPaymentStatus();
+                    }, 5000); // Verificar a cada 5 segundos
+                  }
+                  
                   return;
                 }
               }
@@ -136,7 +174,15 @@ export const PaymentStatus = () => {
     };
 
     checkPaymentStatus();
-  }, [location]);
+    
+    // Cleanup function para limpar o polling
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    };
+  }, [location, user]);
 
   const getStatusContent = () => {
     if (isLoading) {
