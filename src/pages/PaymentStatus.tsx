@@ -42,8 +42,42 @@ export const PaymentStatus = () => {
         const paymentId = params.get('payment_id');
         const statusParam = params.get('status');
         
-        // Se já tivermos um status na URL, usamos ele diretamente
+        // Se já tivermos um status na URL, verificamos se é PENDING para buscar o status real
         if (statusParam && ['PENDING', 'CONFIRMED', 'RECEIVED', 'OVERDUE', 'REFUNDED'].includes(statusParam)) {
+          // Se for PENDING, tentamos buscar o status real do banco
+          if (statusParam === 'PENDING') {
+            try {
+              // Buscar o último pagamento do usuário
+              const { data: payments, error: paymentsError } = await supabase
+                .from('payments')
+                .select('*')
+                .eq('user_id', user?.id)
+                .order('created_at', { ascending: false })
+                .limit(1);
+              
+              if (paymentsError) {
+                console.error('Erro ao buscar pagamentos:', paymentsError);
+                setStatus('PENDING');
+                setIsLoading(false);
+                return;
+              }
+              
+              if (payments && payments.length > 0) {
+                const latestPayment = payments[0];
+                console.log('🔍 Último pagamento encontrado:', latestPayment.status);
+                
+                if (latestPayment.status === 'CONFIRMED') {
+                  setStatus('CONFIRMED');
+                  toast.success('Pagamento aprovado com sucesso!');
+                  setIsLoading(false);
+                  return;
+                }
+              }
+            } catch (error) {
+              console.error('Erro ao verificar status real:', error);
+            }
+          }
+          
           setStatus(statusParam as PaymentStatus);
           setIsLoading(false);
           
