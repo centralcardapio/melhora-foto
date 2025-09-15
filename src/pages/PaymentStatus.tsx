@@ -46,6 +46,12 @@ export const PaymentStatus = () => {
         if (statusParam && ['PENDING', 'CONFIRMED', 'RECEIVED', 'OVERDUE', 'REFUNDED'].includes(statusParam)) {
           setStatus(statusParam as PaymentStatus);
           setIsLoading(false);
+          
+          // Se o status for CONFIRMED, mostramos mensagem de sucesso
+          if (statusParam === 'CONFIRMED') {
+            toast.success('Pagamento aprovado com sucesso!');
+          }
+          
           return;
         }
 
