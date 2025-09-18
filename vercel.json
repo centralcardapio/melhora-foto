@@ -11,11 +11,11 @@
   "rewrites": [
     {
       "source": "/foto",
-      "destination": "/index.html"
+      "destination": "/foto/index.html"
     },
     {
-      "source": "/foto/(.*)",
-      "destination": "/index.html"
+      "source": "/foto/((?!assets/).*)",
+      "destination": "/foto/index.html"
     }
   ],
   "headers": [
