@@ -2,24 +2,33 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, Image, CheckCircle, Clock } from "lucide-react";
+import { ChefHat, Image, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { imageImprovementService } from "@/services/imageImprovementService";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProcessingPhoto {
   name: string;
   url: string;
-  status: 'waiting' | 'processing' | 'completed';
+  status: 'waiting' | 'processing' | 'completed' | 'failed';
   progress: number;
+  error?: string;
+  transformedUrl?: string;
+  aiDescription?: string;
 }
 
 interface PhotoProcessingProps {
   photos: Array<{ name: string; url: string }>;
   onComplete: () => void;
+  selectedStyle?: string;
+  customPrompt?: string;
 }
 
-export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) => {
+export const PhotoProcessing = ({ photos, onComplete, selectedStyle = 'moderno-gourmet', customPrompt }: PhotoProcessingProps) => {
   const [processingPhotos, setProcessingPhotos] = useState<ProcessingPhoto[]>([]);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [overallProgress, setOverallProgress] = useState(0);
+  const { user } = useAuth();
   
   useEffect(() => {
     // Initialize processing photos
@@ -39,28 +48,105 @@ export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) =>
   const processPhotos = async (initialPhotos: ProcessingPhoto[]) => {
     const photos = [...initialPhotos];
     
+    // Buscar estilo do usuário no banco de dados
+    let userStyle = selectedStyle; // Fallback para o estilo passado como parâmetro
+    
+    if (user) {
+      try {
+        const { data: styleData, error: styleError } = await supabase
+          .from('user_styles')
+          .select('selected_style')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!styleError && styleData?.selected_style) {
+          userStyle = styleData.selected_style;
+          console.log('🎨 Estilo do usuário obtido do banco:', userStyle);
+        } else {
+          console.log('⚠️ Usando estilo padrão:', userStyle);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao buscar estilo do usuário:', error);
+        console.log('⚠️ Usando estilo padrão:', userStyle);
+      }
+    }
+    
     for (let i = 0; i < photos.length; i++) {
       // Start processing current photo
       photos[i].status = 'processing';
       setProcessingPhotos([...photos]);
       setCurrentPhotoIndex(i);
       
-      // Simulate 10 seconds processing for each photo
-      for (let progress = 0; progress <= 100; progress += 5) {
-        await new Promise(resolve => setTimeout(resolve, 500)); // 500ms * 20 steps = 10 seconds
-        
-        photos[i].progress = progress;
+      try {
+        // Update progress to 20% - starting AI processing
+        photos[i].progress = 20;
         setProcessingPhotos([...photos]);
-        setOverallProgress(((i * 100) + progress) / photos.length);
+        setOverallProgress(((i * 100) + 20) / photos.length);
+        
+        // Usar Image Improvement Service para transformação real
+        const aiResult = await imageImprovementService.transformImage({
+          originalImageUrl: photos[i].url,
+          style: userStyle, // Usar estilo do banco de dados
+          prompt: customPrompt
+        });
+        
+        if (!aiResult.success || !aiResult.imageUrl) {
+          throw new Error(aiResult.error || 'Falha na transformação com o endpoint');
+        }
+        
+        // Update progress to 80% - AI processing complete
+        photos[i].progress = 80;
+        photos[i].transformedUrl = aiResult.imageUrl;
+        photos[i].aiDescription = aiResult.message || `Imagem transformada no estilo ${aiResult.styleUsed}`;
+        setProcessingPhotos([...photos]);
+        setOverallProgress(((i * 100) + 80) / photos.length);
+        
+        // Save to database with real AI transformation data
+        if (user) {
+          const { error } = await supabase
+            .from('photo_transformations')
+            .insert({
+              user_id: user.id,
+              original_image_url: photos[i].url,
+              original_image_name: photos[i].name,
+              status: 'completed',
+              transformed_images: [
+                {
+                  url: aiResult.imageUrl,
+                  downloadUrl: aiResult.downloadUrl,
+                  version: 1,
+                  feedback: '',
+                  style: userStyle, // Usar o estilo obtido do banco de dados
+                  ai_description: aiResult.message || `Imagem transformada no estilo ${aiResult.styleUsed}`,
+                  created_at: new Date().toISOString()
+                }
+              ],
+              reprocessing_count: 0
+            });
+
+          if (error) {
+            console.error('Error saving transformation result:', error);
+            throw new Error('Erro ao salvar resultado da transformação');
+          }
+        }
+        
+        // Complete processing
+        photos[i].progress = 100;
+        photos[i].status = 'completed';
+        
+      } catch (error) {
+        console.error('Error processing photo:', error);
+        photos[i].status = 'failed';
+        photos[i].error = error instanceof Error ? error.message : 'Erro desconhecido';
       }
       
-      // Mark as completed
-      photos[i].status = 'completed';
       setProcessingPhotos([...photos]);
+      setOverallProgress(((i + 1) * 100) / photos.length);
       
       // Start next photo if exists
       if (i < photos.length - 1) {
         photos[i + 1].status = 'processing';
+        setProcessingPhotos([...photos]);
       }
     }
     
@@ -79,6 +165,8 @@ export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) =>
         return <ChefHat className="h-4 w-4 text-primary animate-pulse" />;
       case 'waiting':
         return <Clock className="h-4 w-4 text-muted-foreground" />;
+      case 'failed':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
     }
   };
 
@@ -90,6 +178,8 @@ export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) =>
         return 'Processando...';
       case 'waiting':
         return 'Aguardando';
+      case 'failed':
+        return 'Falhou';
     }
   };
 
@@ -152,12 +242,20 @@ export const PhotoProcessing = ({ photos, onComplete }: PhotoProcessingProps) =>
                       <div className="space-y-1">
                         <Progress value={photo.progress} className="h-1" />
                         <p className="text-xs text-muted-foreground">
-                          {photo.progress}% - Aplicando melhorias...
+                          {photo.progress}% - {photo.progress < 50 ? 'Analisando imagem...' : 'Aplicando melhorias com IA...'}
                         </p>
                       </div>
                     )}
                     
-                    {photo.status !== 'processing' && (
+                    {photo.status === 'failed' && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-red-600 dark:text-red-400">
+                          {photo.error || 'Erro no processamento'}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {photo.status !== 'processing' && photo.status !== 'failed' && (
                       <Badge 
                         variant={photo.status === 'completed' ? 'default' : 'secondary'} 
                         className="text-xs"

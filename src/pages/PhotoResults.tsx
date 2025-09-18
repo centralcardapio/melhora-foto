@@ -11,6 +11,7 @@ import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, Package } from "lucide-r
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { imageImprovementService } from "@/services/imageImprovementService";
 
 interface TransformedPhoto {
   id: string;
@@ -18,10 +19,16 @@ interface TransformedPhoto {
   originalName: string;
   transformedImages: Array<{
     url: string;
+    downloadUrl?: string;
     version: number;
     feedback?: string;
+    style?: string;
+    ai_description?: string;
+    created_at?: string;
   }>;
   reprocessingCount: number;
+  status: string;
+  created_at: string;
 }
 
 const PhotoResults = () => {
@@ -50,13 +57,17 @@ const PhotoResults = () => {
         if (error) throw error;
 
         const transformedPhotos: TransformedPhoto[] = data.map(item => {
-          let transformedImages: Array<{url: string; version: number; feedback?: string}> = [];
+          let transformedImages: Array<{url: string; downloadUrl?: string; version: number; feedback?: string; style?: string; ai_description?: string; created_at?: string}> = [];
           
           if (Array.isArray(item.transformed_images)) {
             transformedImages = item.transformed_images.map((img: any, index) => ({
               url: img?.url || '',
+              downloadUrl: img?.downloadUrl || '',
               version: img?.version || index + 1,
-              feedback: img?.feedback || ''
+              feedback: img?.feedback || '',
+              style: img?.style || '',
+              ai_description: img?.ai_description || '',
+              created_at: img?.created_at || ''
             }));
           }
           
@@ -65,7 +76,9 @@ const PhotoResults = () => {
             originalUrl: item.original_image_url,
             originalName: item.original_image_name,
             transformedImages,
-            reprocessingCount: item.reprocessing_count
+            reprocessingCount: item.reprocessing_count,
+            status: item.status || 'completed',
+            created_at: item.created_at || ''
           };
         });
 
@@ -136,14 +149,38 @@ const PhotoResults = () => {
       const photo = photos.find(p => p.id === photoId);
       if (!photo) return;
 
-      // Simulate reprocessing (10 seconds)
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      // Get the current transformed image (the one being reprocessed)
+      const currentImage = photo.transformedImages.find(img => img.version === imageVersion);
+      if (!currentImage) {
+        throw new Error('Imagem não encontrada para reprocessamento');
+      }
 
-      // Add new transformed image (for now, using the same original image)
-      const newTransformedImage = {
-        url: photo.originalUrl, // In real implementation, this would be the AI-processed image
-        version: photo.transformedImages.length + 1,
+      console.log('🔄 Reprocessando imagem com feedback:', {
+        photoId,
+        imageVersion,
+        currentImageUrl: currentImage.url,
         feedback: comment
+      });
+
+      // Usar o novo serviço de reprocessamento com custom_prompt
+      const aiResult = await imageImprovementService.reprocessImage(
+        currentImage.url, // Usar a foto já melhorada, não a original
+        comment // Usar o feedback do usuário como custom_prompt
+      );
+
+      if (!aiResult.success || !aiResult.imageUrl) {
+        throw new Error(aiResult.error || 'Falha no reprocessamento com IA');
+      }
+
+      // Add new transformed image with real AI result
+      const newTransformedImage = {
+        url: aiResult.imageUrl,
+        downloadUrl: aiResult.downloadUrl,
+        version: photo.transformedImages.length + 1,
+        feedback: comment,
+        style: currentImage.style, // Manter o estilo original da foto
+        ai_description: aiResult.message || `Reprocessamento: ${comment}`,
+        created_at: new Date().toISOString()
       };
 
       // Update the photo in database
@@ -177,8 +214,8 @@ const PhotoResults = () => {
       }));
 
       toast({
-        title: "Foto reprocessada com sucesso!",
-        description: "Uma nova versão da foto foi gerada com base no seu feedback."
+        title: "Reprocessamento concluído",
+        description: "A foto foi reprocessada com IA baseado no seu feedback."
       });
 
     } catch (error) {
@@ -193,13 +230,32 @@ const PhotoResults = () => {
     }
   };
 
-  const handleDownloadSingle = (imageUrl: string, fileName: string) => {
+  const handleDownloadSingle = (imageUrl: string, fileName: string, downloadUrl?: string) => {
     const link = document.createElement('a');
-    link.href = imageUrl;
+    // Usar downloadUrl se disponível, senão usar imageUrl
+    link.href = downloadUrl || imageUrl;
     link.download = `${fileName}_profissional.jpg`;
+    link.target = '_blank'; // Abrir em nova aba para garantir o download
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // Formatar nome do estilo para exibição
+  const formatStyleName = (style: string): string => {
+    const styleNames: Record<string, string> = {
+      'classico-italiano': 'Clássico Italiano',
+      'pub-moderno': 'Pub Moderno',
+      'cafe-aconchegante': 'Café Aconchegante',
+      'rustico-madeira': 'Rústico de Madeira',
+      'contemporaneo-asiatico': 'Contemporâneo Asiático',
+      'moderno-gourmet': 'Moderno Gourmet',
+      'saudavel-vibrante': 'Saudável & Vibrante',
+      'clean-minimalista': 'Clean & Minimalista',
+      'alta-gastronomia': 'Alta Gastronomia'
+    };
+
+    return styleNames[style] || style.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
   const handleDownloadAll = async () => {
@@ -211,6 +267,7 @@ const PhotoResults = () => {
         const latestImage = photo.transformedImages[photo.transformedImages.length - 1];
         return {
           url: latestImage.url,
+          downloadUrl: latestImage.downloadUrl,
           name: `${photo.originalName}_profissional_v${latestImage.version}.jpg`
         };
       });
@@ -218,8 +275,10 @@ const PhotoResults = () => {
       // Download each photo individually (in a real implementation, you'd create a ZIP)
       for (const photo of latestPhotos) {
         const link = document.createElement('a');
-        link.href = photo.url;
+        // Usar downloadUrl se disponível, senão usar url
+        link.href = photo.downloadUrl || photo.url;
         link.download = photo.name;
+        link.target = '_blank'; // Abrir em nova aba para garantir o download
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -293,7 +352,19 @@ const PhotoResults = () => {
               {photos.map((photo) => (
                 <Card key={photo.id}>
                   <CardHeader>
-                    <CardTitle className="text-lg">{photo.originalName}</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{photo.originalName}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        {photo.transformedImages[0]?.style && (
+                          <Badge variant="outline" className="text-xs">
+                            {photo.transformedImages[0].style.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </Badge>
+                        )}
+                        <Badge variant={photo.status === 'completed' ? 'default' : 'secondary'}>
+                          {photo.status === 'completed' ? 'Concluído' : photo.status}
+                        </Badge>
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
@@ -306,11 +377,23 @@ const PhotoResults = () => {
                         return (
                           <div key={index} className="border rounded-lg p-4">
                             <div className="flex items-center justify-between mb-4">
-                              <Badge variant="secondary">
-                                Versão {transformedImage.version}
-                              </Badge>
-                              {transformedImage.version > 1 && (
-                                <Badge variant="outline">Reprocessada</Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary">
+                                  Versão {transformedImage.version}
+                                </Badge>
+                                {transformedImage.version > 1 && (
+                                  <Badge variant="outline">Reprocessada</Badge>
+                                )}
+                                {transformedImage.style && (
+                                  <Badge variant="outline" className="text-xs">
+                                    IA: {formatStyleName(transformedImage.style)}
+                                  </Badge>
+                                )}
+                              </div>
+                              {transformedImage.created_at && (
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(transformedImage.created_at).toLocaleDateString('pt-BR')}
+                                </span>
                               )}
                             </div>
                             
@@ -337,7 +420,9 @@ const PhotoResults = () => {
 
                                {/* Transformed Photo */}
                                <div>
-                                 <h4 className="font-medium mb-2 text-center">Foto Profissional</h4>
+                                 <h4 className="font-medium mb-2 text-center">
+                                   Foto Profissional {transformedImage.style ? `(${formatStyleName(transformedImage.style)})` : ''}
+                                 </h4>
                                  <div className="relative group cursor-pointer">
                                     <img 
                                       src={transformedImage.url} 
@@ -359,7 +444,7 @@ const PhotoResults = () => {
                                    <Button 
                                      variant="outline" 
                                      size="sm"
-                                     onClick={() => handleDownloadSingle(transformedImage.url, photo.originalName)}
+                                     onClick={() => handleDownloadSingle(transformedImage.url, photo.originalName, transformedImage.downloadUrl)}
                                    >
                                      <Download className="h-4 w-4 mr-2" />
                                      Baixar

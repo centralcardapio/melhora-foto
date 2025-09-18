@@ -8,8 +8,8 @@ export const asaasConfig = {
   // Chave de API (obrigatória)
   apiKey: import.meta.env.VITE_ASAAS_API_KEY,
   
-  // Configurações de notificação
-  webhookUrl: `${window.location.origin}/foto/api/webhook/asaas`,
+  // Configurações de notificação - Microserviço no Railway
+  webhookUrl: 'https://melhora-foto-production.up.railway.app/api/webhooks/asaas',
   
   // Configurações de redirecionamento
   successUrl: `${window.location.origin}/foto/payment/status`,

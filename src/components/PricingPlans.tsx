@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Plan {
   name: string;
@@ -43,9 +44,20 @@ const plans: Plan[] = [
 ];
 
 export const PricingPlans = ({ onPlanSelect }: PricingPlansProps) => {
+  // Preselecionar o plano Chef por padrão
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans.find(plan => plan.name === "Chef") || null);
+
   const handlePlanSelect = (plan: Plan) => {
+    setSelectedPlan(plan);
     onPlanSelect(plan);
   };
+
+  // Notificar o plano preselecionado quando o componente montar
+  useEffect(() => {
+    if (selectedPlan) {
+      onPlanSelect(selectedPlan);
+    }
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -53,7 +65,11 @@ export const PricingPlans = ({ onPlanSelect }: PricingPlansProps) => {
       {plans.map((plan, index) => (
         <Card 
           key={index} 
-          className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : 'border-border'} transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer hover:border-primary/50`}
+          className={`relative transition-all duration-300 hover:shadow-lg flex flex-col cursor-pointer ${
+            selectedPlan?.name === plan.name 
+              ? 'border-orange-500 shadow-lg scale-105 bg-orange-50/30' 
+              : 'border-border hover:border-orange-300'
+          }`}
           onClick={() => handlePlanSelect(plan)}
         >
           {plan.popular && (
@@ -61,6 +77,14 @@ export const PricingPlans = ({ onPlanSelect }: PricingPlansProps) => {
               <Badge className="bg-primary text-primary-foreground px-4 py-1">
                 Mais Popular
               </Badge>
+            </div>
+          )}
+          
+          {selectedPlan?.name === plan.name && (
+            <div className="absolute -top-3 right-3">
+              <div className="bg-orange-500 text-white rounded-full p-1">
+                <Check className="h-4 w-4" />
+              </div>
             </div>
           )}
           

@@ -27,6 +27,7 @@ export const PhotoUpload = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStartingProcess, setIsStartingProcess] = useState(false);
   const [photosToProcess, setPhotosToProcess] = useState<Array<{ name: string; url: string }>>([]);
+  const [customPrompt, setCustomPrompt] = useState('');
   
   const { toast } = useToast();
   const { user, hasSelectedStyle } = useAuth();
@@ -200,30 +201,8 @@ export const PhotoUpload = ({
         return;
       }
 
-      // ONLY AFTER credits are successfully used, save photo transformations to database
-      for (const photo of photos) {
-        const { error } = await supabase
-          .from('photo_transformations')
-          .insert({
-            user_id: user.id,
-            original_image_url: photo.url,
-            original_image_name: photo.name,
-            status: 'processing',
-            transformed_images: [
-              {
-                url: photo.url, // For now, using the same image
-                version: 1,
-                feedback: ''
-              }
-            ],
-            reprocessing_count: 0
-          });
-
-        if (error) {
-          console.error('Error saving photo transformation:', error);
-          throw new Error('Erro ao salvar transformação');
-        }
-      }
+      // Credits are used, now start processing with OpenRouter
+      // The actual transformation and database saving will be done in PhotoProcessing component
 
       // Start processing
       setPhotosToProcess(photos.map(p => ({ name: p.name, url: p.url })));
@@ -251,6 +230,8 @@ export const PhotoUpload = ({
       <PhotoProcessing 
         photos={photosToProcess}
         onComplete={handleProcessingComplete}
+        selectedStyle={user?.user_metadata?.selected_style || 'moderno-gourmet'}
+        customPrompt={customPrompt}
       />
     );
   }
@@ -267,46 +248,45 @@ export const PhotoUpload = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Upload Options - Side by Side */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upload Manual */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Upload</h3>
-            
-            <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}`}>
-              <input {...getInputProps()} />
-              <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-              <div className="space-y-2">
-                <p className="font-medium">
-                  {isDragActive ? 'Solte as fotos aqui' : 'Arraste e solte suas fotos aqui'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  ou clique para selecionar arquivos
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Formatos aceitos: JPG, JPEG, PNG, WebP, BMP
-                </p>
-              </div>
+        {/* Upload - Full Width */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Upload</h3>
+          
+          <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50'}`}>
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <div className="space-y-2">
+              <p className="text-lg font-medium">
+                {isDragActive ? 'Solte as fotos aqui' : 'Arraste e solte suas fotos aqui'}
+              </p>
+              <p className="text-muted-foreground">
+                ou clique para selecionar arquivos
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Formatos aceitos: JPG, JPEG, PNG, WebP, BMP
+              </p>
             </div>
-
-            {uploadedFiles.length > 0 && (
-              <div>
-                <h4 className="font-medium mb-3">Fotos selecionadas ({uploadedFiles.length}/{availablePhotos})</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="relative group">
-                      <img src={URL.createObjectURL(file)} alt={`Upload ${index + 1}`} className="w-full h-16 object-cover rounded-lg" />
-                      <button onClick={() => removeFile(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Importação iFood */}
+          {uploadedFiles.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">Fotos selecionadas ({uploadedFiles.length}/{availablePhotos})</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="relative group">
+                    <img src={URL.createObjectURL(file)} alt={`Upload ${index + 1}`} className="w-full h-20 object-cover rounded-lg" />
+                    <button onClick={() => removeFile(index)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+          {/* Importação iFood - OCULTO */}
+          {/* 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Importação do iFood</h3>
             
@@ -372,10 +352,25 @@ export const PhotoUpload = ({
               </div>
             )}
           </div>
-        </div>
+          */}
 
         {(uploadedFiles.length > 0 || selectedPhotos.size > 0) && (
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t space-y-4">
+            {/* Campo para prompt customizado */}
+            <div className="space-y-2">
+              <Label htmlFor="custom-prompt">Prompt Personalizado (Opcional)</Label>
+              <Input
+                id="custom-prompt"
+                placeholder="Ex: Adicione mais contraste, melhore a iluminação, torne mais vibrante..."
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">
+                Adicione instruções específicas para personalizar ainda mais a transformação das suas fotos.
+              </p>
+            </div>
+            
             <Button 
               size="lg" 
               className="w-full" 
