@@ -29,7 +29,7 @@ export const usePaymentLink = () => {
     userName,
     userId,
     billingType = 'CREDIT_CARD',
-    successUrl = 'https://centraldocardapio.com.br/foto/payment/status',
+    successUrl = 'https://centraldocardapio.com.br/payment/status',
     dueDateLimitDays = 3,
     maxInstallmentCount = 1,
     notificationEnabled = true,

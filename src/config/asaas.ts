@@ -12,7 +12,7 @@ export const asaasConfig = {
   webhookUrl: 'https://melhora-foto-production.up.railway.app/api/webhooks/asaas',
   
   // Configurações de redirecionamento
-  successUrl: `${window.location.origin}/foto/payment/status`,
+  successUrl: `${window.location.origin}/payment/status`,
   dueDateLimitDays: 3, // Dias para vencimento do boleto
 };
 
