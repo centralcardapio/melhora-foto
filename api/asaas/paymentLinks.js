@@ -10,11 +10,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Tentar diferentes nomes de variáveis de ambiente
-    const apiKey = process.env.VITE_ASAAS_API_KEY || process.env.ASAAS_API_KEY;
+    // Usar variável de ambiente do servidor (não VITE_)
+    const apiKey = process.env.ASAAS_API_KEY;
     
-    console.log('🔍 Variáveis de ambiente disponíveis:', {
-      VITE_ASAAS_API_KEY: process.env.VITE_ASAAS_API_KEY ? 'Definida' : 'Não definida',
+    console.log('🔍 Verificando variável de ambiente ASAAS_API_KEY:', {
       ASAAS_API_KEY: process.env.ASAAS_API_KEY ? 'Definida' : 'Não definida',
       NODE_ENV: process.env.NODE_ENV
     });
