@@ -10,6 +10,10 @@
   },
   "rewrites": [
     {
+      "source": "/foto",
+      "destination": "/index.html"
+    },
+    {
       "source": "/foto/(.*)",
       "destination": "/index.html"
     }
