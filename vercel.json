@@ -5,7 +5,7 @@
   "framework": "vite",
   "functions": {
     "api/asaas/paymentLinks.js": {
-      "runtime": "@vercel/node@20.11.1"
+      "runtime": "@vercel/node@5.3.22"
     }
   },
   "rewrites": [
