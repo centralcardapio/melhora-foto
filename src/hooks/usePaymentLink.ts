@@ -29,7 +29,7 @@ export const usePaymentLink = () => {
     userName,
     userId,
     billingType = 'CREDIT_CARD',
-    successUrl = 'https://centraldocardapio.com.br/payment/status',
+    successUrl = asaasConfig.successUrl,
     dueDateLimitDays = 3,
     maxInstallmentCount = 1,
     notificationEnabled = true,
