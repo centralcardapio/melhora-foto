@@ -22,6 +22,14 @@ export interface ImageImprovementResponse {
 class ImageImprovementService {
   private baseUrl: string = 'https://gemini-production.up.railway.app';
 
+  // Converte URLs HTTP para HTTPS para evitar Mixed Content
+  private ensureHttps(url: string): string {
+    if (url && url.startsWith('http://')) {
+      return url.replace('http://', 'https://');
+    }
+    return url;
+  }
+
   // Converte URL da imagem para File object para envio via FormData
   private async urlToFile(imageUrl: string, filename: string): Promise<File> {
     try {
@@ -95,17 +103,21 @@ class ImageImprovementService {
       console.log('🎯 Resposta do reprocessamento:', data);
 
       if (data.success && data.image_url) {
+        // Garantir que as URLs sejam HTTPS para evitar Mixed Content
+        const httpsImageUrl = this.ensureHttps(data.image_url);
+        const httpsDownloadUrl = this.ensureHttps(data.download_url);
+
         console.log('✅ Reprocessamento concluído com sucesso:', {
-          imageUrl: data.image_url,
-          downloadUrl: data.download_url,
+          imageUrl: httpsImageUrl,
+          downloadUrl: httpsDownloadUrl,
           styleUsed: data.style_used,
           processingTime
         });
 
         return {
           success: true,
-          imageUrl: data.image_url,
-          downloadUrl: data.download_url,
+          imageUrl: httpsImageUrl,
+          downloadUrl: httpsDownloadUrl,
           filename: data.filename,
           styleUsed: data.style_used,
           originalFilename: data.original_filename,
@@ -259,17 +271,21 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
       console.log('🎯 Resposta do endpoint:', data);
 
       if (data.success && data.image_url) {
+        // Garantir que as URLs sejam HTTPS para evitar Mixed Content
+        const httpsImageUrl = this.ensureHttps(data.image_url);
+        const httpsDownloadUrl = this.ensureHttps(data.download_url);
+
         console.log('✅ Transformação concluída com sucesso:', {
-          imageUrl: data.image_url,
-          downloadUrl: data.download_url,
+          imageUrl: httpsImageUrl,
+          downloadUrl: httpsDownloadUrl,
           styleUsed: data.style_used,
           processingTime
         });
 
         return {
           success: true,
-          imageUrl: data.image_url,
-          downloadUrl: data.download_url,
+          imageUrl: httpsImageUrl,
+          downloadUrl: httpsDownloadUrl,
           filename: data.filename,
           styleUsed: data.style_used,
           originalFilename: data.original_filename,
