@@ -232,8 +232,9 @@ const PhotoResults = () => {
 
   const handleDownloadSingle = (imageUrl: string, fileName: string, downloadUrl?: string) => {
     const link = document.createElement('a');
-    // Usar downloadUrl se disponível, senão usar imageUrl
-    link.href = downloadUrl || imageUrl;
+    // Usar downloadUrl se disponível, senão usar imageUrl - garantir HTTPS
+    const urlToUse = downloadUrl || imageUrl;
+    link.href = urlToUse.startsWith('http://') ? urlToUse.replace('http://', 'https://') : urlToUse;
     link.download = `${fileName}_profissional.jpg`;
     link.target = '_blank'; // Abrir em nova aba para garantir o download
     document.body.appendChild(link);
@@ -425,10 +426,10 @@ const PhotoResults = () => {
                                  </h4>
                                  <div className="relative group cursor-pointer">
                                     <img 
-                                      src={transformedImage.url} 
+                                      src={transformedImage.url.startsWith('http://') ? transformedImage.url.replace('http://', 'https://') : transformedImage.url} 
                                       alt="Foto transformada"
                                       className="w-full h-80 object-cover rounded-lg"
-                                      onClick={() => setSelectedPhoto(transformedImage.url)}
+                                      onClick={() => setSelectedPhoto(transformedImage.url.startsWith('http://') ? transformedImage.url.replace('http://', 'https://') : transformedImage.url)}
                                       onError={(e) => {
                                         console.error('Error loading transformed image:', transformedImage.url);
                                         e.currentTarget.src = '/placeholder.svg';

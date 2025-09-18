@@ -25,17 +25,25 @@ class ImageImprovementService {
   // Converte URLs HTTP para HTTPS para evitar Mixed Content
   private ensureHttps(url: string): string {
     if (url && url.startsWith('http://')) {
-      return url.replace('http://', 'https://');
+      const httpsUrl = url.replace('http://', 'https://');
+      console.log('🔒 Convertendo URL HTTP para HTTPS:', {
+        original: url,
+        converted: httpsUrl
+      });
+      return httpsUrl;
     }
+    console.log('✅ URL já é HTTPS:', url);
     return url;
   }
 
   // Converte URL da imagem para File object para envio via FormData
   private async urlToFile(imageUrl: string, filename: string): Promise<File> {
     try {
-      console.log('🔄 Convertendo URL para File:', imageUrl);
+      // Garantir que a URL seja HTTPS antes de fazer a requisição
+      const httpsImageUrl = this.ensureHttps(imageUrl);
+      console.log('🔄 Convertendo URL para File:', httpsImageUrl);
       
-      const response = await fetch(imageUrl);
+      const response = await fetch(httpsImageUrl);
       if (!response.ok) {
         throw new Error(`Erro ao buscar imagem: ${response.status}`);
       }
