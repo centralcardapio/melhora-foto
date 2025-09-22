@@ -187,7 +187,7 @@ const CreditStatement: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <div className="font-medium">
-                        {purchase.available_amount} disponível{purchase.available_amount !== 1 ? 's' : ''}
+                        {purchase.available_amount} disponíveis
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {purchase.used_amount} usado{purchase.used_amount !== 1 ? 's' : ''}
