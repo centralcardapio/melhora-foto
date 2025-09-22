@@ -3,7 +3,7 @@ export const asaasConfig = {
   // URL base da API (sandbox ou produção)
   apiUrl: import.meta.env.PROD
     ? '/api/asaas'  // Usar proxy do Vercel em produção
-    : 'https://api-sandbox.asaas.com/v3',
+    : '/api/asaas', // Usar proxy do Vite em desenvolvimento
   
   // Chave de API (obrigatória)
   apiKey: import.meta.env.VITE_ASAAS_API_KEY,
@@ -25,6 +25,7 @@ if (import.meta.env.DEV) {
     successUrl: asaasConfig.successUrl,
     env: {
       VITE_ASAAS_API_KEY: import.meta.env.VITE_ASAAS_API_KEY ? '***' + String(import.meta.env.VITE_ASAAS_API_KEY).slice(-4) : 'não definida',
+      VITE_ASAAS_API_URL: import.meta.env.VITE_ASAAS_API_URL || 'não definida (usando padrão)',
       VITE_ASAAS_WEBHOOK_URL: import.meta.env.VITE_ASAAS_WEBHOOK_URL || 'não definida (usando padrão)',
       VITE_ASAAS_SUCCESS_URL: import.meta.env.VITE_ASAAS_SUCCESS_URL || 'não definida (usando padrão)',
       NODE_ENV: import.meta.env.MODE,

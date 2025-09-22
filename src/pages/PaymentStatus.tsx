@@ -276,7 +276,7 @@ export const PaymentStatus = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Valor:</span>
-                      <span className="font-medium text-green-800">R$ {(paymentData.value / 100).toFixed(2)}</span>
+                      <span className="font-medium text-green-800">R$ {(paymentData.value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Status:</span>
@@ -358,7 +358,7 @@ export const PaymentStatus = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Valor:</span>
-                      <span className="font-medium">R$ {(paymentData.value / 100).toFixed(2)}</span>
+                      <span className="font-medium">R$ {(paymentData.value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Tempo decorrido:</span>

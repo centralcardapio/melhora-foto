@@ -7,11 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, Package } from "lucide-react";
+import { ChefHat, Download, ThumbsDown, RefreshCw, Eye, Package, ZoomIn } from "lucide-react";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { imageImprovementService } from "@/services/imageImprovementService";
+import { createAndDownloadZip, generateZipFileName, PhotoForZip } from "@/utils/zipDownload";
 
 interface TransformedPhoto {
   id: string;
@@ -39,6 +40,11 @@ const PhotoResults = () => {
   const [photos, setPhotos] = useState<TransformedPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  
+  // Debug: Log quando selectedPhoto muda
+  useEffect(() => {
+    console.log('🖼️ selectedPhoto mudou para:', selectedPhoto);
+  }, [selectedPhoto]);
   const [feedbackStates, setFeedbackStates] = useState<Record<string, { showFeedback: boolean; comment: string }>>({});
   const [isReprocessing, setIsReprocessing] = useState<Record<string, boolean>>({});
 
@@ -165,7 +171,8 @@ const PhotoResults = () => {
       // Usar o novo serviço de reprocessamento com custom_prompt
       const aiResult = await imageImprovementService.reprocessImage(
         currentImage.url, // Usar a foto já melhorada, não a original
-        comment // Usar o feedback do usuário como custom_prompt
+        comment, // Usar o feedback do usuário como custom_prompt
+        user?.id // Passar userId para armazenamento
       );
 
       if (!aiResult.success || !aiResult.imageUrl) {
@@ -180,7 +187,11 @@ const PhotoResults = () => {
         feedback: comment,
         style: currentImage.style, // Manter o estilo original da foto
         ai_description: aiResult.message || `Reprocessamento: ${comment}`,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        // Informações sobre armazenamento
+        is_stored: aiResult.isStored,
+        stored_path: aiResult.storedImage?.path,
+        external_url: aiResult.storedImage ? null : aiResult.imageUrl
       };
 
       // Update the photo in database
@@ -264,7 +275,7 @@ const PhotoResults = () => {
     
     try {
       // Get the latest version of each photo
-      const latestPhotos = photos.map(photo => {
+      const latestPhotos: PhotoForZip[] = photos.map(photo => {
         const latestImage = photo.transformedImages[photo.transformedImages.length - 1];
         return {
           url: latestImage.url,
@@ -273,30 +284,28 @@ const PhotoResults = () => {
         };
       });
 
-      // Download each photo individually (in a real implementation, you'd create a ZIP)
-      for (const photo of latestPhotos) {
-        const link = document.createElement('a');
-        // Usar downloadUrl se disponível, senão usar url
-        link.href = photo.downloadUrl || photo.url;
-        link.download = photo.name;
-        link.target = '_blank'; // Abrir em nova aba para garantir o download
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Add small delay between downloads
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
+      // Gerar nome único para o ZIP
+      const zipFileName = generateZipFileName('fotos_profissionais');
+
+      // Mostrar toast de início
+      toast({
+        title: "Criando ZIP...",
+        description: `Baixando ${photos.length} fotos e criando arquivo ZIP`,
+      });
+
+      // Criar e baixar ZIP
+      await createAndDownloadZip(latestPhotos, zipFileName);
 
       toast({
-        title: "Download concluído",
-        description: `${latestPhotos.length} fotos profissionais foram baixadas.`
+        title: "Download concluído!",
+        description: `Arquivo ZIP "${zipFileName}" baixado com sucesso`,
       });
     } catch (error) {
+      console.error('Error creating ZIP:', error);
       toast({
-        title: "Erro no download",
-        description: "Não foi possível baixar todas as fotos. Tente novamente.",
-        variant: "destructive"
+        title: "Erro ao criar ZIP",
+        description: "Não foi possível criar o arquivo ZIP. Tente novamente.",
+        variant: "destructive",
       });
     }
   };
@@ -402,20 +411,27 @@ const PhotoResults = () => {
                                {/* Original Photo */}
                                <div>
                                  <h4 className="font-medium mb-2 text-center">Foto Original</h4>
-                                 <div className="relative group cursor-pointer">
+                                 <div 
+                                   className="relative group cursor-pointer hover:opacity-90 transition-opacity"
+                                   onClick={(e) => {
+                                     e.preventDefault();
+                                     e.stopPropagation();
+                                     console.log('🖼️ Clicando na foto original:', photo.originalUrl);
+                                     setSelectedPhoto(photo.originalUrl);
+                                   }}
+                                 >
                                     <img 
                                       src={photo.originalUrl} 
                                       alt="Foto original"
-                                      className="w-full h-80 object-cover rounded-lg"
-                                      onClick={() => setSelectedPhoto(photo.originalUrl)}
+                                      className="w-full h-80 object-cover rounded-lg hover:shadow-lg transition-shadow"
                                       onError={(e) => {
                                         console.error('Error loading original image:', photo.originalUrl);
                                         e.currentTarget.src = '/placeholder.svg';
                                       }}
                                     />
-                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                     <Eye className="h-8 w-8 text-white" />
-                                   </div>
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center pointer-events-none">
+                                      <ZoomIn className="h-8 w-8 text-white" />
+                                    </div>
                                  </div>
                                </div>
 
@@ -424,20 +440,28 @@ const PhotoResults = () => {
                                  <h4 className="font-medium mb-2 text-center">
                                    Foto Profissional {transformedImage.style ? `(${formatStyleName(transformedImage.style)})` : ''}
                                  </h4>
-                                 <div className="relative group cursor-pointer">
+                                 <div 
+                                   className="relative group cursor-pointer hover:opacity-90 transition-opacity"
+                                   onClick={(e) => {
+                                     e.preventDefault();
+                                     e.stopPropagation();
+                                     const imageUrl = transformedImage.url.startsWith('http://') ? transformedImage.url.replace('http://', 'https://') : transformedImage.url;
+                                     console.log('🖼️ Clicando na foto transformada:', imageUrl);
+                                     setSelectedPhoto(imageUrl);
+                                   }}
+                                 >
                                     <img 
                                       src={transformedImage.url.startsWith('http://') ? transformedImage.url.replace('http://', 'https://') : transformedImage.url} 
                                       alt="Foto transformada"
-                                      className="w-full h-80 object-cover rounded-lg"
-                                      onClick={() => setSelectedPhoto(transformedImage.url.startsWith('http://') ? transformedImage.url.replace('http://', 'https://') : transformedImage.url)}
+                                      className="w-full h-80 object-cover rounded-lg hover:shadow-lg transition-shadow"
                                       onError={(e) => {
                                         console.error('Error loading transformed image:', transformedImage.url);
                                         e.currentTarget.src = '/placeholder.svg';
                                       }}
                                     />
-                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                                     <Eye className="h-8 w-8 text-white" />
-                                   </div>
+                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center pointer-events-none">
+                                      <ZoomIn className="h-8 w-8 text-white" />
+                                    </div>
                                  </div>
                                  
                                  {/* Action Buttons - Right aligned below transformed photo */}
@@ -539,7 +563,10 @@ const PhotoResults = () => {
       </main>
 
       {/* Image Preview Modal */}
-      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+      <Dialog open={!!selectedPhoto} onOpenChange={() => {
+        console.log('🖼️ Fechando modal de visualização');
+        setSelectedPhoto(null);
+      }}>
         <DialogContent className="max-w-4xl max-h-[90vh] p-2">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-center">Visualização da Foto</DialogTitle>
@@ -550,6 +577,7 @@ const PhotoResults = () => {
                 src={selectedPhoto} 
                 alt="Foto em tamanho maior"
                 className="max-w-full max-h-[75vh] object-contain rounded-lg"
+                onLoad={() => console.log('🖼️ Imagem carregada no modal:', selectedPhoto)}
                 onError={(e) => {
                   console.error('Error loading image:', selectedPhoto);
                   e.currentTarget.src = '/placeholder.svg';

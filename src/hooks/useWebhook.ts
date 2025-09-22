@@ -19,7 +19,7 @@ export const useWebhook = () => {
           break;
         case 'PAYMENT_RECEIVED':
           toast.success('Pagamento Recebido!', {
-            description: `Valor: R$ ${((paymentData?.value || 0) / 100).toFixed(2)}`,
+            description: `Valor: R$ ${((paymentData?.value || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             duration: 5000,
           });
           break;

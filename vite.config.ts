@@ -29,7 +29,7 @@ export default defineConfig(({ mode }): UserConfig => {
       port: 8080,
       proxy: {
         '/api/asaas': {
-          target: 'https://api-sandbox.asaas.com/v3',
+          target: env.VITE_ASAAS_API_URL || 'https://api-sandbox.asaas.com/v3',
           changeOrigin: true,
           secure: false,
           rewrite: (path) => {

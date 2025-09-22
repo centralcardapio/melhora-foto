@@ -1,6 +1,8 @@
 // Serviço para integração com o endpoint de melhoria de imagens
 // Usa o endpoint: https://gemini-production.up.railway.app/improve-image
 
+import { downloadAndStoreImage, StoredImage } from '@/utils/imageStorage';
+
 export interface ImageImprovementRequest {
   originalImageUrl: string;
   style: string;
@@ -17,6 +19,9 @@ export interface ImageImprovementResponse {
   message?: string;
   error?: string;
   processingTime: number;
+  // Informações sobre armazenamento
+  storedImage?: StoredImage;
+  isStored: boolean;
 }
 
 class ImageImprovementService {
@@ -34,6 +39,49 @@ class ImageImprovementService {
     }
     console.log('✅ URL já é HTTPS:', url);
     return url;
+  }
+
+  // Valida se a resposta do endpoint é válida e não contém dados de outros usuários
+  private validateResponse(data: any, expectedUserId: string): boolean {
+    try {
+      // Verificar se a resposta tem a estrutura esperada
+      if (!data || typeof data !== 'object') {
+        console.error('❌ Resposta inválida: não é um objeto');
+        return false;
+      }
+
+      if (!data.success) {
+        console.error('❌ Resposta indica falha:', data.message || 'Erro desconhecido');
+        return false;
+      }
+
+      if (!data.image_url) {
+        console.error('❌ Resposta não contém image_url');
+        return false;
+      }
+
+      // Verificar se a URL da imagem parece válida
+      try {
+        new URL(data.image_url);
+      } catch {
+        console.error('❌ image_url não é uma URL válida:', data.image_url);
+        return false;
+      }
+
+      // Log de segurança para detectar possíveis vazamentos
+      console.log('🔍 Validação de resposta:', {
+        hasImageUrl: !!data.image_url,
+        hasDownloadUrl: !!data.download_url,
+        hasFilename: !!data.filename,
+        expectedUserId: expectedUserId,
+        responseKeys: Object.keys(data)
+      });
+
+      return true;
+    } catch (error) {
+      console.error('❌ Erro na validação da resposta:', error);
+      return false;
+    }
   }
 
   // Converte URL da imagem para File object para envio via FormData
@@ -66,7 +114,7 @@ class ImageImprovementService {
 
 
   // Reprocessa imagem usando custom_prompt (para feedback do usuário)
-  async reprocessImage(imageUrl: string, customPrompt: string): Promise<ImageImprovementResponse> {
+  async reprocessImage(imageUrl: string, customPrompt: string, userId?: string): Promise<ImageImprovementResponse> {
     const startTime = Date.now();
     
     try {
@@ -88,10 +136,19 @@ class ImageImprovementService {
       formData.append('custom_prompt', customPrompt);
       formData.append('output_dir', 'output');
       
+      // Adicionar identificadores únicos para evitar mistura de usuários
+      const timestamp = Date.now();
+      const uniqueId = userId ? `${userId}_${timestamp}` : `anonymous_${timestamp}`;
+      formData.append('user_id', uniqueId);
+      formData.append('request_id', `reprocess_${timestamp}_${Math.random().toString(36).substr(2, 9)}`);
+      formData.append('session_id', `session_${timestamp}`);
+      
       console.log('📤 Enviando reprocessamento para endpoint:', {
         customPrompt,
         filename: originalFilename,
-        fileSize: imageFile.size
+        fileSize: imageFile.size,
+        userId: uniqueId,
+        requestId: `reprocess_${timestamp}_${Math.random().toString(36).substr(2, 9)}`
       });
 
       // Fazer requisição para o endpoint
@@ -110,6 +167,11 @@ class ImageImprovementService {
 
       console.log('🎯 Resposta do reprocessamento:', data);
 
+      // Validar resposta antes de processar
+      if (!this.validateResponse(data, uniqueId)) {
+        throw new Error('Resposta inválida do endpoint - possível vazamento de dados');
+      }
+
       if (data.success && data.image_url) {
         // Garantir que as URLs sejam HTTPS para evitar Mixed Content
         const httpsImageUrl = this.ensureHttps(data.image_url);
@@ -122,15 +184,40 @@ class ImageImprovementService {
           processingTime
         });
 
+        // Tentar armazenar a imagem reprocessada no Supabase Storage
+        let storedImage: StoredImage | undefined;
+        let isStored = false;
+
+        if (userId) {
+          console.log('💾 Tentando armazenar imagem reprocessada no Supabase Storage...');
+          storedImage = await downloadAndStoreImage(
+            httpsImageUrl,
+            userId,
+            data.original_filename || originalFilename,
+            'reprocessed'
+          );
+          
+          if (storedImage) {
+            isStored = true;
+            console.log('✅ Imagem reprocessada armazenada com sucesso no Supabase Storage');
+          } else {
+            console.warn('⚠️ Falha ao armazenar imagem reprocessada, usando URL externa');
+          }
+        } else {
+          console.log('ℹ️ userId não fornecido, pulando armazenamento no Supabase Storage');
+        }
+
         return {
           success: true,
-          imageUrl: httpsImageUrl,
-          downloadUrl: httpsDownloadUrl,
+          imageUrl: storedImage?.url || httpsImageUrl,
+          downloadUrl: storedImage?.downloadUrl || httpsDownloadUrl,
           filename: data.filename,
           styleUsed: data.style_used,
           originalFilename: data.original_filename,
           message: data.message,
-          processingTime
+          processingTime,
+          storedImage,
+          isStored
         };
       } else {
         throw new Error(data.message || 'Falha no reprocessamento da imagem');
@@ -143,7 +230,8 @@ class ImageImprovementService {
       return {
         success: false,
         processingTime,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        isStored: false
       };
     }
   }
@@ -230,7 +318,7 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
   }
 
   // Transforma imagem usando o endpoint
-  async transformImage(request: ImageImprovementRequest): Promise<ImageImprovementResponse> {
+  async transformImage(request: ImageImprovementRequest, userId?: string): Promise<ImageImprovementResponse> {
     const startTime = Date.now();
     
     try {
@@ -256,10 +344,19 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
       formData.append('custom_prompt', unifiedPrompt);
       formData.append('output_dir', 'output');
       
+      // Adicionar identificadores únicos para evitar mistura de usuários
+      const timestamp = Date.now();
+      const uniqueId = userId ? `${userId}_${timestamp}` : `anonymous_${timestamp}`;
+      formData.append('user_id', uniqueId);
+      formData.append('request_id', `req_${timestamp}_${Math.random().toString(36).substr(2, 9)}`);
+      formData.append('session_id', `session_${timestamp}`);
+      
       console.log('📤 Enviando para endpoint:', {
         customPrompt: unifiedPrompt.substring(0, 100) + '...',
         filename: originalFilename,
-        fileSize: imageFile.size
+        fileSize: imageFile.size,
+        userId: uniqueId,
+        requestId: `req_${timestamp}_${Math.random().toString(36).substr(2, 9)}`
       });
 
       // Fazer requisição para o endpoint
@@ -278,6 +375,11 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
 
       console.log('🎯 Resposta do endpoint:', data);
 
+      // Validar resposta antes de processar
+      if (!this.validateResponse(data, uniqueId)) {
+        throw new Error('Resposta inválida do endpoint - possível vazamento de dados');
+      }
+
       if (data.success && data.image_url) {
         // Garantir que as URLs sejam HTTPS para evitar Mixed Content
         const httpsImageUrl = this.ensureHttps(data.image_url);
@@ -290,15 +392,40 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
           processingTime
         });
 
+        // Tentar armazenar a imagem transformada no Supabase Storage
+        let storedImage: StoredImage | undefined;
+        let isStored = false;
+
+        if (userId) {
+          console.log('💾 Tentando armazenar imagem transformada no Supabase Storage...');
+          storedImage = await downloadAndStoreImage(
+            httpsImageUrl,
+            userId,
+            data.original_filename || originalFilename,
+            data.style_used || request.style
+          );
+          
+          if (storedImage) {
+            isStored = true;
+            console.log('✅ Imagem transformada armazenada com sucesso no Supabase Storage');
+          } else {
+            console.warn('⚠️ Falha ao armazenar imagem transformada, usando URL externa');
+          }
+        } else {
+          console.log('ℹ️ userId não fornecido, pulando armazenamento no Supabase Storage');
+        }
+
         return {
           success: true,
-          imageUrl: httpsImageUrl,
-          downloadUrl: httpsDownloadUrl,
+          imageUrl: storedImage?.url || httpsImageUrl,
+          downloadUrl: storedImage?.downloadUrl || httpsDownloadUrl,
           filename: data.filename,
           styleUsed: data.style_used,
           originalFilename: data.original_filename,
           message: data.message,
-          processingTime
+          processingTime,
+          storedImage,
+          isStored
         };
       } else {
         throw new Error(data.message || 'Falha no processamento da imagem');
@@ -311,7 +438,8 @@ Em vez disso, deve retornar um erro para o sistema que estiver chamando o prompt
       return {
         success: false,
         processingTime,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        isStored: false
       };
     }
   }

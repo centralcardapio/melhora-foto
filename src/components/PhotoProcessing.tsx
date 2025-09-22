@@ -88,7 +88,7 @@ export const PhotoProcessing = ({ photos, onComplete, selectedStyle = 'moderno-g
           originalImageUrl: photos[i].url,
           style: userStyle, // Usar estilo do banco de dados
           prompt: customPrompt
-        });
+        }, user?.id);
         
         if (!aiResult.success || !aiResult.imageUrl) {
           throw new Error(aiResult.error || 'Falha na transformação com o endpoint');
@@ -118,7 +118,11 @@ export const PhotoProcessing = ({ photos, onComplete, selectedStyle = 'moderno-g
                   feedback: '',
                   style: userStyle, // Usar o estilo obtido do banco de dados
                   ai_description: aiResult.message || `Imagem transformada no estilo ${aiResult.styleUsed}`,
-                  created_at: new Date().toISOString()
+                  created_at: new Date().toISOString(),
+                  // Informações sobre armazenamento
+                  is_stored: aiResult.isStored,
+                  stored_path: aiResult.storedImage?.path,
+                  external_url: aiResult.storedImage ? null : aiResult.imageUrl
                 }
               ],
               reprocessing_count: 0
