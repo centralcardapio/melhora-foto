@@ -58,6 +58,16 @@ const ResetPassword = () => {
         supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
+        }).then(({ error }) => {
+          if (error) {
+            console.error('Erro ao definir sessão:', error);
+            toast({
+              title: "Erro de autenticação",
+              description: "Não foi possível validar o link de recuperação. Solicite um novo link.",
+              variant: "destructive",
+            });
+            setTimeout(() => navigate("/auth"), 2000);
+          }
         });
       }
       console.log('Tokens de recuperação encontrados na URL');
@@ -69,7 +79,7 @@ const ResetPassword = () => {
         description: "Este link de redefinição de senha é inválido ou expirou. Solicite um novo link.",
         variant: "destructive",
       });
-      setTimeout(() => navigate("/auth"), 2000);
+      setTimeout(() => navigate("/auth"), 3000);
     }
   }, [searchParams, navigate, toast]);
 
@@ -77,48 +87,71 @@ const ResetPassword = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validar senha
-    const passwordValidationErrors = validatePassword(password);
-    if (passwordValidationErrors.length > 0) {
+    try {
+      // Validar senha
+      const passwordValidationErrors = validatePassword(password);
+      if (passwordValidationErrors.length > 0) {
+        toast({
+          title: "Senha não atende aos requisitos",
+          description: passwordValidationErrors.join("; "),
+          variant: "destructive",
+        });
+        setPasswordErrors(passwordValidationErrors);
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificar se as senhas coincidem
+      if (password !== confirmPassword) {
+        toast({
+          title: "Erro",
+          description: "As senhas não coincidem.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Verificar se o usuário está autenticado
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast({
+          title: "Sessão expirada",
+          description: "Sua sessão expirou. Solicite um novo link de recuperação.",
+          variant: "destructive",
+        });
+        setTimeout(() => navigate("/auth"), 2000);
+        setIsLoading(false);
+        return;
+      }
+
+      // Atualizar a senha
+      const { error } = await supabase.auth.updateUser({
+        password: password,
+      });
+
+      if (error) {
+        console.error('Erro ao atualizar senha:', error);
+        toast({
+          title: "Erro ao atualizar senha",
+          description: translateErrorMessage(error.message),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Senha atualizada com sucesso!",
+          description: "Sua senha foi redefinida com sucesso. Você pode fazer login com sua nova senha.",
+        });
+        // Redirecionar para login após 2 segundos
+        setTimeout(() => navigate("/auth?mode=login"), 2000);
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao resetar senha:', error);
       toast({
-        title: "Senha não atende aos requisitos",
-        description: passwordValidationErrors.join("; "),
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente em alguns instantes.",
         variant: "destructive",
       });
-      setPasswordErrors(passwordValidationErrors);
-      setIsLoading(false);
-      return;
-    }
-
-    // Verificar se as senhas coincidem
-    if (password !== confirmPassword) {
-      toast({
-        title: "Erro",
-        description: "As senhas não coincidem.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    // Atualizar a senha
-    const { error } = await supabase.auth.updateUser({
-      password: password,
-    });
-
-    if (error) {
-      toast({
-        title: "Erro",
-        description: translateErrorMessage(error.message),
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Senha atualizada!",
-        description: "Sua senha foi redefinida com sucesso.",
-      });
-      // Redirecionar para login
-      navigate("/auth?mode=login");
     }
 
     setIsLoading(false);
@@ -194,6 +227,31 @@ const ResetPassword = () => {
                           <span>•</span> {error}
                         </div>
                       ))}
+                    </div>
+                  )}
+                  
+                  {/* Indicador de força da senha */}
+                  {password && (
+                    <div className="mt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs text-muted-foreground">Força da senha:</span>
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              passwordErrors.length === 0 ? 'bg-green-500' :
+                              passwordErrors.length <= 2 ? 'bg-yellow-500' :
+                              'bg-red-500'
+                            }`}
+                            style={{ 
+                              width: `${Math.max(0, (5 - passwordErrors.length) * 20)}%` 
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {passwordErrors.length === 0 ? 'Forte' :
+                           passwordErrors.length <= 2 ? 'Média' : 'Fraca'}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>

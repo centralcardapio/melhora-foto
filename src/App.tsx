@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import CreditStatement from "./pages/CreditStatement";
 import PhotoResults from "./pages/PhotoResults";
 import PaymentStatus from "./pages/PaymentStatus";
+import TermsOfService from "./pages/TermsOfService";
 import CookieConsent from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/payment/status" element={<PaymentStatus />} />
             <Route path="/auth-redirect" element={<AuthRedirect />} />
             <Route path="/politica-privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos-de-servico" element={<TermsOfService />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -24,6 +24,16 @@ export default defineConfig(({ mode }): UserConfig => {
         }
       }
     },
+    // Desabilitar geração automática de favicon
+    define: {
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    },
+    // Configuração para desabilitar favicon
+    plugins: [
+      react(),
+      ...(mode === 'development' ? [componentTagger()] : [])
+    ],
     server: {
       host: "::",
       port: 8080,
@@ -75,10 +85,6 @@ export default defineConfig(({ mode }): UserConfig => {
         optionsSuccessStatus: 204
       }
     },
-    plugins: [
-      react(),
-      ...(mode === 'development' ? [componentTagger()] : [])
-    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src")

@@ -62,7 +62,7 @@ export const Footer = () => {
 
         <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 Central do Cardápio. Todos os direitos reservados.
+            © 2025 Central do Cardápio. Todos os direitos reservados.
           </p>
           <p className="text-sm text-muted-foreground">
             Desenvolvido com <span className="text-orange-500">🧡</span> para restaurantes brasileiros

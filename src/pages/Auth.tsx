@@ -178,25 +178,48 @@ const Auth = () => {
       return;
     }
 
-    setIsLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-
-    if (error) {
+    // Validar formato do e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(resetEmail)) {
       toast({
-        title: "Erro",
-        description: translateErrorMessage(error.message),
+        title: "E-mail inválido",
+        description: "Por favor, digite um e-mail válido.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "E-mail enviado!",
-        description: "Verifique sua caixa de entrada para redefinir sua senha.",
-      });
-      setShowForgotPassword(false);
-      setResetEmail("");
+      return;
     }
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        console.error('Erro ao enviar e-mail de reset:', error);
+        toast({
+          title: "Erro ao enviar e-mail",
+          description: translateErrorMessage(error.message),
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "E-mail enviado!",
+          description: "Verifique sua caixa de entrada e siga as instruções para redefinir sua senha. O link expira em 60 minutos.",
+        });
+        setShowForgotPassword(false);
+        setResetEmail("");
+      }
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+
     setIsLoading(false);
   };
 
@@ -426,7 +449,7 @@ const Auth = () => {
                 {!isLogin && (
                   <p className="text-xs text-muted-foreground text-center">
                     Ao criar uma conta, você concorda com nossos{" "}
-                    <a href="#" className="underline hover:text-primary">
+                    <a href="/termos-de-servico" className="underline hover:text-primary">
                       Termos de Serviço
                     </a>{" "}
                     e{" "}
