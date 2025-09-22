@@ -28,14 +28,18 @@ export default async function handler(req, res) {
 
     console.log('🔑 API Key encontrada:', apiKey.substring(0, 20) + '...');
 
+    // Usar URL configurável da API
+    const asaasApiUrl = process.env.ASAAS_API_URL || 'https://api.asaas.com/v3';
+    const paymentLinksUrl = `${asaasApiUrl}/paymentLinks`;
+
     console.log('📤 Fazendo requisição para API Asaas:', {
       method: req.method,
-      url: 'https://api-sandbox.asaas.com/v3/paymentLinks',
+      url: paymentLinksUrl,
       body: req.body
     });
 
     // Fazer a requisição para a API do Asaas
-    const response = await fetch('https://api-sandbox.asaas.com/v3/paymentLinks', {
+    const response = await fetch(paymentLinksUrl, {
       method: req.method,
       headers: {
         'access_token': apiKey,
