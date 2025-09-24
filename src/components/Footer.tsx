@@ -55,7 +55,7 @@ export const Footer = () => {
             <h3 className="text-sm font-semibold">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><a href="/politica-privacidade" className="hover:text-foreground transition-colors">Política de Privacidade</a></li>
-              <li><a href="/termos-condicoes" className="hover:text-foreground transition-colors">Termos e Condições</a></li>
+              <li><a href="/termos-de-servico" className="hover:text-foreground transition-colors">Termos e Condições</a></li>
             </ul>
           </div>
         </div>
